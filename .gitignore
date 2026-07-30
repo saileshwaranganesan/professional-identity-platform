@@ -1,0 +1,38 @@
+# Java
+**/target/
+**/build/
+*.class
+*.jar
+*.war
+*.ear
+
+# Node.js
+node_modules/
+dist/
+build/
+coverage/
+.vite/
+
+# VS Code
+.vscode/
+
+# IntelliJ
+.idea/
+
+# Operating system files
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# Build folders
+out/
+
+# Logs
+*.log
+logs/
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+*.temp
