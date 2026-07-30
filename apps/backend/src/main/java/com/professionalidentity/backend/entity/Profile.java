@@ -59,4 +59,12 @@ public class Profile extends BaseEntity {
             fetch = FetchType.LAZY
     )
     private List<Project> projects = new ArrayList<>();
+
+    @OneToMany(
+            mappedBy = "profile",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true,
+            fetch = FetchType.LAZY
+    )
+    private List<Experience> experiences = new ArrayList<>();
 }
