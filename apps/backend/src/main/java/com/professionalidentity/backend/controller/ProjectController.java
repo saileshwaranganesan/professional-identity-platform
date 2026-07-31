@@ -5,6 +5,7 @@ import com.professionalidentity.backend.dto.request.CreateProjectRequest;
 import com.professionalidentity.backend.dto.request.UpdateProjectRequest;
 import com.professionalidentity.backend.dto.response.ProjectResponse;
 import com.professionalidentity.backend.service.ProjectService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,6 +24,7 @@ import java.util.List;
 import java.util.UUID;
 
 @RestController
+@Tag(name = "Projects", description = "Manage projects and browse published projects.")
 @RequestMapping(ApplicationConstants.API_PREFIX + "/projects")
 public class ProjectController {
 
@@ -33,12 +35,9 @@ public class ProjectController {
     }
 
     @PostMapping
-    public ResponseEntity<ProjectResponse> createProject(
-            @RequestParam UUID profileId,
-            @Valid @RequestBody CreateProjectRequest request
-    ) {
+    public ResponseEntity<ProjectResponse> createProject(@Valid @RequestBody CreateProjectRequest request) {
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(projectService.createProject(profileId, request));
+                .body(projectService.createProject(request));
     }
 
     @PutMapping("/{projectId}")

@@ -7,6 +7,7 @@ import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.validator.constraints.URL;
 
 import java.time.LocalDate;
 
@@ -31,12 +32,15 @@ public class CreateProjectRequest {
 
     private String description;
 
+    @URL
     @Size(max = 500)
     private String githubUrl;
 
+    @URL
     @Size(max = 500)
     private String liveDemoUrl;
 
+    @URL
     @Size(max = 500)
     private String documentationUrl;
 

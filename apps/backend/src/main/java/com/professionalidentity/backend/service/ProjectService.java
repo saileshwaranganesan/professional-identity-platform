@@ -6,10 +6,8 @@ import com.professionalidentity.backend.dto.response.ProjectResponse;
 import com.professionalidentity.backend.entity.Profile;
 import com.professionalidentity.backend.entity.Project;
 import com.professionalidentity.backend.exception.DuplicateProjectSlugException;
-import com.professionalidentity.backend.exception.ProfileNotFoundException;
 import com.professionalidentity.backend.exception.ProjectNotFoundException;
 import com.professionalidentity.backend.mapper.ProjectMapper;
-import com.professionalidentity.backend.repository.ProfileRepository;
 import com.professionalidentity.backend.repository.ProjectRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,22 +19,22 @@ import java.util.UUID;
 public class ProjectService {
 
     private final ProjectRepository projectRepository;
-    private final ProfileRepository profileRepository;
+    private final CurrentUserService currentUserService;
     private final ProjectMapper projectMapper;
 
     public ProjectService(
             ProjectRepository projectRepository,
-            ProfileRepository profileRepository,
+            CurrentUserService currentUserService,
             ProjectMapper projectMapper
     ) {
         this.projectRepository = projectRepository;
-        this.profileRepository = profileRepository;
+        this.currentUserService = currentUserService;
         this.projectMapper = projectMapper;
     }
 
     @Transactional
-    public ProjectResponse createProject(UUID profileId, CreateProjectRequest request) {
-        Profile profile = getProfileOrThrow(profileId);
+    public ProjectResponse createProject(CreateProjectRequest request) {
+        Profile profile = currentUserService.getCurrentProfile();
         validateUniqueSlug(request.getSlug());
 
         Project project = new Project();
@@ -98,12 +96,8 @@ public class ProjectService {
 
     private Project getProjectOrThrow(UUID projectId) {
         return projectRepository.findById(projectId)
+                .filter(project -> project.getProfile().getId().equals(currentUserService.getCurrentProfile().getId()))
                 .orElseThrow(() -> new ProjectNotFoundException(projectId));
-    }
-
-    private Profile getProfileOrThrow(UUID profileId) {
-        return profileRepository.findById(profileId)
-                .orElseThrow(() -> new ProfileNotFoundException(profileId));
     }
 
     private void validateUniqueSlug(String slug) {

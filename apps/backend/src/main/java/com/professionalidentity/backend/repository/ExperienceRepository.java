@@ -11,4 +11,6 @@ import java.util.UUID;
 public interface ExperienceRepository extends JpaRepository<Experience, UUID> {
 
     List<Experience> findByProfileIdOrderByDisplayOrderAsc(UUID profileId);
+
+    boolean existsByProfileId(UUID profileId);
 }

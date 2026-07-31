@@ -12,6 +12,8 @@ import org.springframework.stereotype.Component;
 @Component
 public class AdminDataInitializer implements ApplicationRunner {
 
+    private static final int USERNAME_MAX_LENGTH = 100;
+
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final AdminProperties adminProperties;
@@ -33,6 +35,7 @@ public class AdminDataInitializer implements ApplicationRunner {
         }
 
         Profile profile = new Profile();
+        profile.setUsername(toUsername(adminProperties.email()));
         profile.setFirstName(adminProperties.name());
 
         User admin = new User();
@@ -43,5 +46,14 @@ public class AdminDataInitializer implements ApplicationRunner {
         admin.setProfile(profile);
 
         userRepository.save(admin);
+    }
+
+    private String toUsername(String email) {
+        String localPart = email.substring(0, email.indexOf('@'));
+        String username = localPart.replaceAll("[^A-Za-z0-9._-]", "-");
+        if (!Character.isLetterOrDigit(username.charAt(0))) {
+            username = "admin-" + username;
+        }
+        return username.substring(0, Math.min(username.length(), USERNAME_MAX_LENGTH));
     }
 }

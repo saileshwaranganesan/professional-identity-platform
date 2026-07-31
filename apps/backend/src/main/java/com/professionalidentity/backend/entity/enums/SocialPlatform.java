@@ -1,12 +1,19 @@
 package com.professionalidentity.backend.entity.enums;
 
 public enum SocialPlatform {
-    GITHUB,
     LINKEDIN,
-    TWITTER,
+    GITHUB,
     PORTFOLIO,
+    TWITTER,
+    INSTAGRAM,
+    FACEBOOK,
     YOUTUBE,
     MEDIUM,
+    DEVTO,
     LEETCODE,
-    HACKERRANK
+    CODEFORCES,
+    HACKERRANK,
+    BEHANCE,
+    DRIBBBLE,
+    OTHER
 }

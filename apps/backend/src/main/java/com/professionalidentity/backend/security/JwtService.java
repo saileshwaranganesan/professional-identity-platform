@@ -19,7 +19,7 @@ public class JwtService {
     private final long expirationMillis;
 
     public JwtService(JwtProperties jwtProperties) {
-        this.signingKey = Keys.hmacShaKeyFor(Decoders.BASE64.decode(jwtProperties.secret()));
+        this.signingKey = Keys.hmacShaKeyFor(Decoders.BASE64URL.decode(jwtProperties.secret()));
         this.expirationMillis = jwtProperties.expiration().toMillis();
         if (expirationMillis <= 0) {
             throw new IllegalArgumentException("jwt.expiration must be positive");

@@ -8,6 +8,8 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -21,6 +23,11 @@ import java.util.List;
 @Table(name = "profiles")
 @NoArgsConstructor
 public class Profile extends BaseEntity {
+
+    @Size(max = 100)
+    @Pattern(regexp = "^[A-Za-z0-9][A-Za-z0-9._-]{0,99}$")
+    @Column(name = "username", unique = true, length = 100)
+    private String username;
 
     @Column(name = "first_name", length = 100)
     private String firstName;
@@ -67,4 +74,44 @@ public class Profile extends BaseEntity {
             fetch = FetchType.LAZY
     )
     private List<Experience> experiences = new ArrayList<>();
+
+    @OneToMany(
+            mappedBy = "profile",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true,
+            fetch = FetchType.LAZY
+    )
+    private List<Education> educations = new ArrayList<>();
+
+    @OneToMany(
+            mappedBy = "profile",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true,
+            fetch = FetchType.LAZY
+    )
+    private List<Skill> skills = new ArrayList<>();
+
+    @OneToMany(
+            mappedBy = "profile",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true,
+            fetch = FetchType.LAZY
+    )
+    private List<Certification> certifications = new ArrayList<>();
+
+    @OneToMany(
+            mappedBy = "profile",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true,
+            fetch = FetchType.LAZY
+    )
+    private List<Achievement> achievements = new ArrayList<>();
+
+    @OneToMany(
+            mappedBy = "profile",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true,
+            fetch = FetchType.LAZY
+    )
+    private List<SocialLink> socialLinks = new ArrayList<>();
 }

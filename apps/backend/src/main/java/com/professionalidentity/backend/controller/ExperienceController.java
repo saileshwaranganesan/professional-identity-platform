@@ -5,6 +5,7 @@ import com.professionalidentity.backend.dto.request.CreateExperienceRequest;
 import com.professionalidentity.backend.dto.request.UpdateExperienceRequest;
 import com.professionalidentity.backend.dto.response.ExperienceResponse;
 import com.professionalidentity.backend.service.ExperienceService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,13 +16,13 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 import java.util.UUID;
 
 @RestController
+@Tag(name = "Experience", description = "Manage work experience in the authenticated user's profile.")
 @RequestMapping(ApplicationConstants.API_PREFIX + "/experiences")
 public class ExperienceController {
 
@@ -32,12 +33,9 @@ public class ExperienceController {
     }
 
     @PostMapping
-    public ResponseEntity<ExperienceResponse> createExperience(
-            @RequestParam UUID profileId,
-            @Valid @RequestBody CreateExperienceRequest request
-    ) {
+    public ResponseEntity<ExperienceResponse> createExperience(@Valid @RequestBody CreateExperienceRequest request) {
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(experienceService.createExperience(profileId, request));
+                .body(experienceService.createExperience(request));
     }
 
     @PutMapping("/{experienceId}")
@@ -49,8 +47,8 @@ public class ExperienceController {
     }
 
     @GetMapping
-    public ResponseEntity<List<ExperienceResponse>> getExperiencesByProfile(@RequestParam UUID profileId) {
-        return ResponseEntity.ok(experienceService.getExperiencesByProfile(profileId));
+    public ResponseEntity<List<ExperienceResponse>> getExperiencesByProfile() {
+        return ResponseEntity.ok(experienceService.getExperiencesByProfile());
     }
 
     @GetMapping("/{experienceId}")

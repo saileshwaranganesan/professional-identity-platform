@@ -23,4 +23,8 @@ public interface ProjectRepository extends JpaRepository<Project, UUID> {
     List<Project> findByStatus(ProjectStatus status);
 
     List<Project> findByProfileId(UUID profileId);
+
+    boolean existsByProfileId(UUID profileId);
+
+    List<Project> findByProfileIdAndPublishedTrue(UUID profileId);
 }

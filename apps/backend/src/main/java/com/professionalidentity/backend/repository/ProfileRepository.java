@@ -11,4 +11,6 @@ import java.util.UUID;
 public interface ProfileRepository extends JpaRepository<Profile, UUID> {
 
     Optional<Profile> findFirstByOrderByCreatedAtAsc();
+
+    Optional<Profile> findByUsername(String username);
 }

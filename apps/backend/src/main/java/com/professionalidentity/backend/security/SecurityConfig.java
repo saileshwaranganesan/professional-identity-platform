@@ -1,8 +1,12 @@
 package com.professionalidentity.backend.security;
 
+import com.professionalidentity.backend.response.ApiError;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.MediaType;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -14,6 +18,9 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import tools.jackson.databind.ObjectMapper;
+
+import java.time.LocalDateTime;
 
 @Configuration
 public class SecurityConfig {
@@ -21,7 +28,8 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(
             HttpSecurity http,
-            JwtAuthenticationFilter jwtAuthenticationFilter
+            JwtAuthenticationFilter jwtAuthenticationFilter,
+            ObjectMapper objectMapper
     ) throws Exception {
 
         return http
@@ -33,11 +41,17 @@ public class SecurityConfig {
 
                 .exceptionHandling(exception ->
                         exception.authenticationEntryPoint(
-                                (request, response, authException) ->
-                                        response.sendError(
-                                                HttpServletResponse.SC_UNAUTHORIZED,
-                                                authException.getMessage()
-                                        )
+                                (request, response, authException) -> {
+                                    HttpStatus status = HttpStatus.UNAUTHORIZED;
+                                    response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                                    response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+                                    objectMapper.writeValue(response.getOutputStream(), ApiError.builder()
+                                            .status(status.value())
+                                            .error(status.getReasonPhrase())
+                                            .message("Authentication is required.")
+                                            .timestamp(LocalDateTime.now())
+                                            .build());
+                                }
                         )
                 )
 
@@ -45,8 +59,13 @@ public class SecurityConfig {
                         authorize
                                 .requestMatchers(
                                         "/api/v1/auth/login",
-                                        "/api/v1/health"
+                                        "/api/v1/health",
+                                        "/actuator/health",
+                                        "/swagger-ui.html",
+                                        "/swagger-ui/**",
+                                        "/api-docs/**"
                                 ).permitAll()
+                                .requestMatchers(HttpMethod.GET, "/api/v1/public/*").permitAll()
                                 .anyRequest().authenticated()
                 )
 

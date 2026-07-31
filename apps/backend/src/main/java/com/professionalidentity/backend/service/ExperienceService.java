@@ -8,10 +8,8 @@ import com.professionalidentity.backend.entity.Profile;
 import com.professionalidentity.backend.entity.enums.EmploymentStatus;
 import com.professionalidentity.backend.exception.BadRequestException;
 import com.professionalidentity.backend.exception.ExperienceNotFoundException;
-import com.professionalidentity.backend.exception.ProfileNotFoundException;
 import com.professionalidentity.backend.mapper.ExperienceMapper;
 import com.professionalidentity.backend.repository.ExperienceRepository;
-import com.professionalidentity.backend.repository.ProfileRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,21 +22,21 @@ import java.util.UUID;
 public class ExperienceService {
 
     private final ExperienceRepository experienceRepository;
-    private final ProfileRepository profileRepository;
+    private final CurrentUserService currentUserService;
     private final ExperienceMapper experienceMapper;
 
     public ExperienceService(
             ExperienceRepository experienceRepository,
-            ProfileRepository profileRepository,
+            CurrentUserService currentUserService,
             ExperienceMapper experienceMapper
     ) {
         this.experienceRepository = experienceRepository;
-        this.profileRepository = profileRepository;
+        this.currentUserService = currentUserService;
         this.experienceMapper = experienceMapper;
     }
 
     @Transactional
-    public ExperienceResponse createExperience(UUID profileId, CreateExperienceRequest request) {
+    public ExperienceResponse createExperience(CreateExperienceRequest request) {
         validateEmploymentPeriod(
                 request.getStartDate(),
                 request.getEndDate(),
@@ -46,13 +44,13 @@ public class ExperienceService {
                 request.getEmploymentStatus()
         );
 
-        Profile profile = getProfileOrThrow(profileId);
+        Profile profile = currentUserService.getCurrentProfile();
         Experience experience = new Experience();
         experience.setProfile(profile);
         experienceMapper.populateEntity(experience, request);
 
         if (request.getDisplayOrder() == null) {
-            experience.setDisplayOrder(experienceRepository.findByProfileIdOrderByDisplayOrderAsc(profileId).size());
+            experience.setDisplayOrder(experienceRepository.findByProfileIdOrderByDisplayOrderAsc(profile.getId()).size());
         } else {
             placeAtDisplayOrder(experience, request.getDisplayOrder());
         }
@@ -85,10 +83,9 @@ public class ExperienceService {
     }
 
     @Transactional(readOnly = true)
-    public List<ExperienceResponse> getExperiencesByProfile(UUID profileId) {
-        getProfileOrThrow(profileId);
+    public List<ExperienceResponse> getExperiencesByProfile() {
         return experienceMapper.toResponseList(
-                experienceRepository.findByProfileIdOrderByDisplayOrderAsc(profileId)
+                experienceRepository.findByProfileIdOrderByDisplayOrderAsc(currentUserService.getCurrentProfile().getId())
         );
     }
 
@@ -105,12 +102,9 @@ public class ExperienceService {
 
     private Experience getExperienceOrThrow(UUID experienceId) {
         return experienceRepository.findById(experienceId)
+                .filter(experience -> experience.getProfile().getId()
+                        .equals(currentUserService.getCurrentProfile().getId()))
                 .orElseThrow(() -> new ExperienceNotFoundException(experienceId));
-    }
-
-    private Profile getProfileOrThrow(UUID profileId) {
-        return profileRepository.findById(profileId)
-                .orElseThrow(() -> new ProfileNotFoundException(profileId));
     }
 
     private void validateEmploymentPeriod(

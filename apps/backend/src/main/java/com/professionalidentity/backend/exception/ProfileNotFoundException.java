@@ -7,4 +7,8 @@ public class ProfileNotFoundException extends RuntimeException {
     public ProfileNotFoundException(UUID profileId) {
         super("Profile not found with id: " + profileId);
     }
+
+    public ProfileNotFoundException(String username) {
+        super("Profile not found with username: " + username);
+    }
 }
