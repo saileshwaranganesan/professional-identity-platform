@@ -1,0 +1,1 @@
+export { useEducation } from './queries'

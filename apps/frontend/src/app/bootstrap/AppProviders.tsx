@@ -2,14 +2,18 @@
  * AppProviders — Global Provider Tree
  *
  * The single location responsible for mounting all global React providers.
- * Mounts RouterProvider (TanStack Router). Future providers (e.g. QueryClientProvider)
- * will wrap RouterProvider here.
+ * Mounts QueryProvider (TanStack Query) and RouterProvider (TanStack Router).
  */
 
 import { RouterProvider } from '@tanstack/react-router'
 
 import { router } from '@/app/router'
+import { QueryProvider } from '@/application/query'
 
 export function AppProviders() {
-  return <RouterProvider router={router} />
+  return (
+    <QueryProvider>
+      <RouterProvider router={router} />
+    </QueryProvider>
+  )
 }
