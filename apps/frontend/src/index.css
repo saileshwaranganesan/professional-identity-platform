@@ -1,0 +1,75 @@
+/*
+ * Global CSS Foundation
+ *
+ * Purpose: browser normalization and universal defaults only.
+ * This file does not contain colors, typography scale, spacing tokens,
+ * design tokens, utility classes, or component styles.
+ * Those belong to later implementation phases.
+ */
+
+/* Box model */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+/* Remove default margins and padding */
+* {
+  margin: 0;
+  padding: 0;
+}
+
+/* Full-height document */
+html {
+  height: 100%;
+}
+
+body {
+  min-height: 100%;
+
+  /* Readable line height (WCAG minimum for paragraph text) */
+  line-height: 1.5;
+
+  /* Signal support for light/dark system themes */
+  color-scheme: light dark;
+
+  /* Text rendering quality */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+/* Form controls do not inherit font by default */
+input,
+button,
+textarea,
+select {
+  font: inherit;
+}
+
+/* Eliminate inline image descender gap */
+img,
+picture,
+video,
+canvas,
+svg {
+  display: block;
+}
+
+/* Prevent media overflow on narrow viewports */
+img,
+video {
+  max-width: 100%;
+}
+
+/* Prevent long strings from breaking layout */
+p,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  overflow-wrap: break-word;
+}
