@@ -2,10 +2,10 @@
  * Global CSS Foundation
  *
  * Purpose: browser normalization and universal defaults only.
- * This file does not contain colors, typography scale, spacing tokens,
- * design tokens, utility classes, or component styles.
- * Those belong to later implementation phases.
+ * Imports design tokens and applies top-level document defaults.
  */
+
+@import './styles/tokens.css';
 
 /* Box model */
 *,
@@ -28,8 +28,11 @@ html {
 body {
   min-height: 100%;
 
-  /* Readable line height (WCAG minimum for paragraph text) */
-  line-height: 1.5;
+  /* Global typography & color defaults from tokens */
+  font-family: var(--font-family-sans);
+  color: var(--color-text-primary);
+  background-color: var(--color-bg-app);
+  line-height: var(--line-height-normal);
 
   /* Signal support for light/dark system themes */
   color-scheme: light dark;
