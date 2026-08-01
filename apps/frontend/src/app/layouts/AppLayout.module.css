@@ -1,0 +1,26 @@
+/*
+ * AppLayout structural styles
+ *
+ * Geometry only — no colors, no design tokens, no typography.
+ * Visual design is applied when the design system is implemented.
+ */
+
+.root {
+  display: grid;
+  grid-template-rows: auto 1fr;
+  min-height: 100svh;
+}
+
+.header {
+  /*
+   * Navigation bar region.
+   * Height and visual treatment applied when navigation is implemented.
+   */
+}
+
+.main {
+  /*
+   * Primary content area.
+   * Grows to fill remaining viewport height below the header.
+   */
+}

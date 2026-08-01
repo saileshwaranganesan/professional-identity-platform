@@ -1,0 +1,13 @@
+# Prettier ignore file
+# Prettier should not format generated output, lockfiles, or binary assets.
+
+# Build output
+dist/
+dist-ssr/
+
+# Package manager
+pnpm-lock.yaml
+node_modules/
+
+# Public assets (SVG files here may be minified or auto-generated)
+public/

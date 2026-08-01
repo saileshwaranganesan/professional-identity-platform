@@ -16,6 +16,14 @@
     "noEmit": true,
     "jsx": "react-jsx",
 
+    /* Path aliases — must mirror vite.config.ts resolve.alias exactly.
+       Note: baseUrl is omitted intentionally. TypeScript 6 deprecated baseUrl
+       when used only for path mapping. With moduleResolution: "bundler",
+       paths entries resolve relative to this tsconfig file without it. */
+    "paths": {
+      "@/*": ["./src/*"]
+    },
+
     /* Strict type checking — FTAS-001 §1.2.2 */
     "strict": true,
     "noUncheckedIndexedAccess": true,
