@@ -4,7 +4,7 @@
  * The persistent structural frame that wraps every page of the application.
  *
  * Responsibilities:
- *   - Render the <header> region where navigation will mount
+ *   - Render the Header bar (Logo + Navigation)
  *   - Render the <main> content area where page components render
  *   - Own the top-level page layout grid
  *
@@ -13,6 +13,8 @@
  */
 
 import type { ReactNode } from 'react'
+
+import { Header } from '@/components/navigation/Header'
 
 import styles from './AppLayout.module.css'
 
@@ -23,13 +25,7 @@ interface AppLayoutProps {
 export function AppLayout({ children }: AppLayoutProps) {
   return (
     <div className={styles.root}>
-      <header className={styles.header}>
-        {/*
-         * Navigation component mounts here.
-         * Implemented once routing and auth are in place.
-         */}
-      </header>
-
+      <Header />
       <main className={styles.main}>{children}</main>
     </div>
   )

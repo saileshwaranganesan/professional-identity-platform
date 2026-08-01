@@ -1,0 +1,44 @@
+/*
+ * Card Component Styles
+ *
+ * Consumes design tokens defined in src/styles/tokens.css.
+ * Provides surface container styles for elevated, outlined, and flat variants,
+ * as well as padding scales (none, small, medium).
+ */
+
+.card {
+  border-radius: var(--radius-lg);
+  box-sizing: border-box;
+}
+
+/* --- Variants --- */
+
+.elevated {
+  background-color: var(--color-bg-surface);
+  border: 1px solid var(--color-border-default);
+  box-shadow: var(--shadow-sm);
+}
+
+.outlined {
+  background-color: var(--color-bg-surface);
+  border: 1px solid var(--color-border-default);
+}
+
+.flat {
+  background-color: var(--color-bg-subtle);
+  border: 1px solid transparent;
+}
+
+/* --- Padding --- */
+
+.paddingNone {
+  padding: 0;
+}
+
+.paddingSmall {
+  padding: var(--space-4);
+}
+
+.paddingMedium {
+  padding: var(--space-6);
+}

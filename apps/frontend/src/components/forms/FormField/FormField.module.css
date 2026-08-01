@@ -1,0 +1,32 @@
+/*
+ * FormField Component Styles
+ *
+ * Layout CSS for FormField composition component.
+ * Provides vertical spacing, label layout, required indicators, and error text styling.
+ */
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.fullWidth {
+  width: 100%;
+}
+
+.label {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  font-weight: var(--font-weight-medium);
+  cursor: pointer;
+}
+
+.requiredIndicator {
+  color: var(--color-error-500);
+}
+
+.errorText {
+  color: var(--color-error-500);
+}

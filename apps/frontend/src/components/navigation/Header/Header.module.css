@@ -1,0 +1,16 @@
+/*
+ * Header Component Styles
+ *
+ * Consumes design tokens defined in src/styles/tokens.css.
+ * Header bar layout container with surface background and bottom border.
+ */
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 60px;
+  padding: 0 var(--space-6);
+  background-color: var(--color-bg-surface);
+  border-bottom: 1px solid var(--color-border-default);
+}
