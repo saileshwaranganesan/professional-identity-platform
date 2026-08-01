@@ -2,22 +2,14 @@
  * AppProviders — Global Provider Tree
  *
  * The single location responsible for mounting all global React providers.
- * Currently a pass-through wrapper. Future providers are added here, in order:
- *
- *   1. QueryClientProvider  (server state — TanStack Query)
- *   2. RouterProvider       (navigation — TanStack Router)
- *   3. Any auth context
- *
- * This component is deliberately empty until those dependencies are installed.
- * Its existence now means future providers have an obvious, correct home.
+ * Mounts RouterProvider (TanStack Router). Future providers (e.g. QueryClientProvider)
+ * will wrap RouterProvider here.
  */
 
-import type { ReactNode } from 'react'
+import { RouterProvider } from '@tanstack/react-router'
 
-interface AppProvidersProps {
-  children: ReactNode
-}
+import { router } from '@/app/router'
 
-export function AppProviders({ children }: AppProvidersProps) {
-  return <>{children}</>
+export function AppProviders() {
+  return <RouterProvider router={router} />
 }

@@ -2,15 +2,16 @@
  * Navigation Component
  *
  * Primary navigation menu component (Layer 4 — Presentation Layer).
- * Renders static navigation items. Decoupled from router implementations.
+ * Connects navigation items to TanStack Router links.
  */
+
+import { Link } from '@tanstack/react-router'
 
 import styles from './Navigation.module.css'
 
 export interface NavigationItem {
   label: string
   href: string
-  isActive?: boolean
 }
 
 export interface NavigationProps {
@@ -19,10 +20,8 @@ export interface NavigationProps {
 }
 
 const defaultItems: NavigationItem[] = [
-  { label: 'Overview', href: '#', isActive: true },
-  { label: 'Projects', href: '#' },
-  { label: 'Experience', href: '#' },
-  { label: 'Settings', href: '#' },
+  { label: 'Home', href: '/' },
+  { label: 'About', href: '/about' },
 ]
 
 export function Navigation({
@@ -34,22 +33,19 @@ export function Navigation({
   return (
     <nav className={navClasses} aria-label="Main Navigation">
       <ul className={styles.list ?? ''}>
-        {items.map((item) => {
-          const linkClasses = [
-            styles.link ?? '',
-            item.isActive ? (styles.active ?? '') : '',
-          ]
-            .filter(Boolean)
-            .join(' ')
-
-          return (
-            <li key={item.label} className={styles.item ?? ''}>
-              <a href={item.href} className={linkClasses}>
-                {item.label}
-              </a>
-            </li>
-          )
-        })}
+        {items.map((item) => (
+          <li key={item.label} className={styles.item ?? ''}>
+            <Link
+              to={item.href}
+              className={styles.link ?? ''}
+              activeProps={{
+                className: `${styles.link ?? ''} ${styles.active ?? ''}`,
+              }}
+            >
+              {item.label}
+            </Link>
+          </li>
+        ))}
       </ul>
     </nav>
   )
