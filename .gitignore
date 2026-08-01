@@ -1,5 +1,6 @@
 # Java
 **/target/
+target/
 **/build/
 *.class
 *.jar
@@ -18,6 +19,7 @@ coverage/
 
 # IntelliJ
 .idea/
+*.iml
 
 # Operating system files
 .DS_Store
@@ -30,6 +32,11 @@ out/
 # Logs
 *.log
 logs/
+
+# Environment files
+.env
+.env.*
+application-local.yml
 
 # Temporary files
 tmp/
