@@ -1,4 +1,4 @@
-﻿/*
+/*
  * Contact Messages Admin Route Component
  *
  * Full Visitor Messages Inbox & Management implementation.
@@ -30,14 +30,10 @@ import type { Message } from '@/domain/messages'
 import {
   createMessageColumns,
   MessageDetailsModal,
-  mockMessages,
 } from '@/features/messages'
 
 export function AdminMessagesPage() {
-  const { data: serverMessages, isLoading, isError, error, refetch } = useMessages()
-
-  // Use server messages if array returned, fallback to mockMessages for dev inbox preview
-  const messages = Array.isArray(serverMessages) && serverMessages.length > 0 ? serverMessages : mockMessages
+  const { data: messages = [], isLoading, isError, error, refetch } = useMessages()
 
   const updateStatusMutation = useUpdateMessageStatus()
   const deleteMutation = useDeleteMessage()

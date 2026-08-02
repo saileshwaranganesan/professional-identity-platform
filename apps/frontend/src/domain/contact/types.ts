@@ -6,6 +6,8 @@
 
 import type { z } from 'zod'
 
-import type { contactApiSchema } from './schema'
+import type { contactApiSchema, contactFormSchema } from './schema'
 
 export type ContactApiEntity = z.infer<typeof contactApiSchema>
+
+export type CreateContactFormData = z.infer<typeof contactFormSchema>

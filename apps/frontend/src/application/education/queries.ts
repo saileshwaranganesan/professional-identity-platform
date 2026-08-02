@@ -1,4 +1,4 @@
-﻿/*
+/*
  * Education Application Server State Hooks
  *
  * TanStack Query hooks for education CRUD operations.
@@ -7,6 +7,7 @@
 
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 
+import { useToast } from '@/components/ui/Toast'
 import type {
   CreateEducationFormData,
   Education,
@@ -33,33 +34,48 @@ export const useEducation = useEducations
 
 export function useCreateEducation() {
   const queryClient = useQueryClient()
+  const toast = useToast()
 
   return useMutation<Education, Error, CreateEducationFormData>({
     mutationFn: createEducationApi,
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: queryKeys.education.all })
+      toast.success('Education entry created successfully.')
+    },
+    onError: (err) => {
+      toast.error(err.message || 'Failed to create education entry.')
     },
   })
 }
 
 export function useUpdateEducation() {
   const queryClient = useQueryClient()
+  const toast = useToast()
 
   return useMutation<Education, Error, { id: string; data: UpdateEducationFormData }>({
     mutationFn: ({ id, data }) => updateEducationApi(id, data),
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: queryKeys.education.all })
+      toast.success('Education entry updated successfully.')
+    },
+    onError: (err) => {
+      toast.error(err.message || 'Failed to update education entry.')
     },
   })
 }
 
 export function useDeleteEducation() {
   const queryClient = useQueryClient()
+  const toast = useToast()
 
   return useMutation<void, Error, string>({
     mutationFn: deleteEducationApi,
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: queryKeys.education.all })
+      toast.success('Education entry deleted successfully.')
+    },
+    onError: (err) => {
+      toast.error(err.message || 'Failed to delete education entry.')
     },
   })
 }

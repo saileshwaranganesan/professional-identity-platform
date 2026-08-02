@@ -6,6 +6,7 @@
 
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 
+import { useToast } from '@/components/ui/Toast'
 import type { LoginCredentials, User } from '@/domain/auth'
 
 import { fetchMeApi, loginApi, logoutApi } from '@/infrastructure/auth'
@@ -22,22 +23,33 @@ export function useAuthMe() {
 
 export function useLogin() {
   const queryClient = useQueryClient()
+  const toast = useToast()
 
   return useMutation<User, Error, LoginCredentials>({
     mutationFn: loginApi,
     onSuccess: (user) => {
       queryClient.setQueryData(queryKeys.auth.me, user)
+      toast.success('Login successful.')
+    },
+    onError: (err) => {
+      toast.error(err.message || 'Login failed. Please check your credentials.')
     },
   })
 }
 
 export function useLogout() {
   const queryClient = useQueryClient()
+  const toast = useToast()
 
   return useMutation<void, Error, void>({
     mutationFn: logoutApi,
     onSuccess: () => {
       queryClient.clear()
+      toast.success('Logout successful.')
+    },
+    onError: (err) => {
+      toast.error(err.message || 'Failed to complete logout.')
     },
   })
 }
+

@@ -2,6 +2,7 @@ package com.professionalidentity.backend.security;
 
 import com.professionalidentity.backend.response.ApiError;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -19,27 +20,65 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.header.writers.ReferrerPolicyHeaderWriter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import tools.jackson.databind.ObjectMapper;
 
 import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.List;
 
 @Configuration
 public class SecurityConfig {
 
+    @Value("${app.cors.allowed-origins:http://localhost:5173,http://127.0.0.1:5173}")
+    private String allowedOriginsConfig;
+
+    @Value("${app.security.hsts-enabled:false}")
+    private boolean hstsEnabled;
+
     @Bean
     public SecurityFilterChain securityFilterChain(
             HttpSecurity http,
             JwtAuthenticationFilter jwtAuthenticationFilter,
+            RateLimitingFilter rateLimitingFilter,
+            RequestLoggingFilter requestLoggingFilter,
             ObjectMapper objectMapper
     ) throws Exception {
 
         return http
                 .cors(Customizer.withDefaults())
                 .csrf(AbstractHttpConfigurer::disable)
+
+                .headers(headers -> {
+                    headers.frameOptions(frame -> frame.deny());
+                    headers.contentTypeOptions(Customizer.withDefaults());
+                    headers.referrerPolicy(referrer ->
+                            referrer.policy(ReferrerPolicyHeaderWriter.ReferrerPolicy.STRICT_ORIGIN_WHEN_CROSS_ORIGIN)
+                    );
+                    headers.addHeaderWriter(
+                            new org.springframework.security.web.header.writers.StaticHeadersWriter(
+                                    "Permissions-Policy", "camera=(), microphone=(), geolocation=()"
+                            )
+                    );
+                    headers.contentSecurityPolicy(csp ->
+                            csp.policyDirectives(
+                                    "default-src 'self'; " +
+                                    "script-src 'self' 'unsafe-inline'; " +
+                                    "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; " +
+                                    "font-src 'self' https://fonts.gstatic.com data:; " +
+                                    "img-src 'self' data: https:; " +
+                                    "connect-src 'self' http://localhost:* http://127.0.0.1:*"
+                            )
+                    );
+                    if (hstsEnabled) {
+                        headers.httpStrictTransportSecurity(hsts ->
+                                hsts.includeSubDomains(true).maxAgeInSeconds(31536000)
+                        );
+                    }
+                })
 
                 .sessionManagement(session ->
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
@@ -67,6 +106,7 @@ public class SecurityConfig {
                                         "/api/v1/auth/login",
                                         "/api/v1/auth/me",
                                         "/api/v1/auth/logout",
+                                        "/api/v1/contact",
                                         "/api/v1/health",
                                         "/actuator/health",
                                         "/swagger-ui.html",
@@ -77,10 +117,9 @@ public class SecurityConfig {
                                 .anyRequest().authenticated()
                 )
 
-                .addFilterBefore(
-                        jwtAuthenticationFilter,
-                        UsernamePasswordAuthenticationFilter.class
-                )
+                .addFilterBefore(requestLoggingFilter, UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(rateLimitingFilter, UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
 
                 .build();
     }
@@ -88,9 +127,14 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOriginPatterns(List.of("http://localhost:*", "http://127.0.0.1:*"));
+        List<String> origins = Arrays.stream(allowedOriginsConfig.split(","))
+                .map(String::trim)
+                .filter(s -> !s.isEmpty())
+                .toList();
+
+        configuration.setAllowedOriginPatterns(origins);
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
-        configuration.setAllowedHeaders(List.of("*"));
+        configuration.setAllowedHeaders(List.of("Authorization", "Content-Type", "X-Requested-With", "Accept", "Origin"));
         configuration.setAllowCredentials(true);
         configuration.setMaxAge(3600L);
 

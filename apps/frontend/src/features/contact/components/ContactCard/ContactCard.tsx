@@ -1,8 +1,8 @@
 /*
  * ContactCard Component
  *
- * Feature component for rendering contact information (Layer 4 — Presentation Layer).
- * Composes existing UI primitives (Card, Heading, Text, Button).
+ * Feature component for rendering contact information and visitor submission form (Layer 4 — Presentation Layer).
+ * Composes existing UI primitives (Card, Heading, Text, Button, ContactForm).
  */
 
 import { Button } from '@/components/ui/Button'
@@ -11,6 +11,7 @@ import { Heading } from '@/components/ui/Heading'
 import { Text } from '@/components/ui/Text'
 
 import type { ContactInfo } from '../../types/contact'
+import { ContactForm } from '../ContactForm/ContactForm'
 
 import styles from './ContactCard.module.css'
 
@@ -80,6 +81,8 @@ export function ContactCard({ contact, className }: ContactCardProps) {
             </a>
           )}
         </div>
+
+        <ContactForm />
       </div>
     </Card>
   )

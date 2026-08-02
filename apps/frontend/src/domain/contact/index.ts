@@ -1,3 +1,3 @@
-export { contactApiSchema } from './schema'
-export type { ContactApiEntity } from './types'
+export { contactApiSchema, contactFormSchema } from './schema'
+export type { ContactApiEntity, CreateContactFormData } from './types'
 export { mapContact } from './mapper'

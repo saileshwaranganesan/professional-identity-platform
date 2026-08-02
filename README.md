@@ -1,255 +1,214 @@
-# Professional Identity Platform
+# Professional Identity Platform (v1.0.0)
 
-A production-style full-stack application for creating, managing, and publishing a professional portfolio through a secure dashboard and a public portfolio experience.
-
-The project is designed with a clean, scalable architecture and follows modern software engineering practices to provide a maintainable foundation for long-term development.
+A enterprise-grade full-stack professional portfolio and content management platform built with Spring Boot 3 / Java 21, React 19 / TypeScript, PostgreSQL, and Docker.
 
 ---
 
-## Current Status
+## 🌟 Overview
 
-### Backend
+The **Professional Identity Platform** allows tech professionals to publish a public portfolio while providing a secure administration CMS dashboard for managing projects, career experience, technical skills, education credentials, and visitor messages.
 
-**Version:** v1.0 (Feature Complete)
-
-The backend has been completed, tested, and frozen as the stable API for frontend development.
-
-### Frontend
-
-Currently under development.
-
-### Deployment
-
-Infrastructure prepared using Docker and Docker Compose.
+Engineered with a **strict layered architecture**, **HttpOnly JWT authentication**, **Spring Security hardening**, **TanStack Query caching**, **multi-stage Docker containerization**, and a comprehensive **automated testing suite (JUnit 5, Vitest, Playwright)**.
 
 ---
 
-# Features
+## ✨ Features
 
-## Authentication & Security
+### Public Portfolio Experience
+- **Dynamic Content Showcase**: Displays published projects, career timeline, categorized technical skills, and educational qualifications.
+- **Visitor Contact System**: Direct message submission with real-time Zod validation and backend persistence.
+- **Fast Initial Paint**: Optimized asset bundle with route-based code-splitting for high performance.
 
-* JWT Authentication
-* Spring Security
-* Role-Based Access Control (RBAC)
-* Ownership-based resource access
-* Global exception handling
-* Request validation
+### Admin CMS Dashboard
+- **Authentication & RBAC**: Secure admin authentication using HttpOnly JWT cookies with automated session refresh and CSRF mitigation.
+- **Full CRUD Management**: Management modules for Projects, Work Experience, Skills, Education, and Contact Messages.
+- **Optimistic Mutations & Toast UX**: Smooth UI updates with instant user feedback via a global Toast notification system.
+- **Inbox Management**: View, filter, and track incoming visitor contact inquiries.
 
-## Portfolio Management
-
-Manage professional information through secure REST APIs.
-
-* Profile
-* Projects
-* Experience
-* Education
-* Skills
-* Certifications
-* Achievements
-* Social Links
-
-## Business Features
-
-* Portfolio Aggregation API
-* Profile Completion Engine
-
-## Production Features
-
-* PostgreSQL
-* Flyway Database Migrations
-* Swagger / OpenAPI Documentation
-* Docker & Docker Compose
-* Bean Validation
-* Layered Architecture
+### Production Engineering & DevOps
+- **Security Hardened**: Enforces Security Headers (HSTS, CSP, X-Frame-Options), Rate Limiting, CORS origin controls, and fail-fast `JWT_SECRET` environment validation.
+- **Automated Testing Suite**: 100% passing automated test coverage across Spring Boot integration tests, Vitest component suites, and Playwright E2E tests.
+- **Docker & Docker Compose**: Multi-stage production container builds served via Nginx and managed with health-check dependency chains.
+- **GitHub Actions CI/CD**: Automated CI pipeline verifying code formatting, type checking, unit tests, integration tests, E2E tests, and Docker compilation.
 
 ---
 
-# Architecture
+## 🛠️ Technology Stack
 
-The backend follows a layered architecture.
+### Frontend Application (`apps/frontend`)
+- **Core**: React 19, TypeScript, Vite
+- **Routing & State**: TanStack React Router, TanStack React Query v5
+- **Forms & Validation**: React Hook Form, Zod
+- **Styling**: Vanilla CSS Modules (Design System with CSS Variables)
+- **Testing**: Vitest, React Testing Library, Playwright E2E
+
+### Backend API (`apps/backend`)
+- **Core**: Java 21, Spring Boot 3 (Spring WebMVC, Spring Security)
+- **Persistence**: Spring Data JPA, Hibernate, PostgreSQL 17, Flyway Database Migrations
+- **Security**: JJWT (JSON Web Token), BCrypt Password Hashing, HttpOnly Cookie Handler
+- **API Documentation**: SpringDoc OpenAPI / Swagger UI
+- **Testing**: JUnit 5, Spring Boot Test, MockMvc, H2 Database
+
+### Infrastructure & DevOps
+- **Containerization**: Docker (Multi-Stage), Docker Compose
+- **Web Server**: Nginx 1.27 Alpine (SPA Serving & Caching)
+- **CI/CD Pipeline**: GitHub Actions
+
+---
+
+## 📐 System Architecture
 
 ```text
-Controller
-      ↓
-Service
-      ↓
-Mapper
-      ↓
-Repository
-      ↓
-PostgreSQL
++-----------------------------------------------------------------------+
+|                            Client Browser                             |
+|       (React 19 SPA served via Nginx on Port 80 / Port 5173)          |
++-----------------------------------------------------------------------+
+                                   |
+                          HTTP / Cookie Auth
+                                   v
++-----------------------------------------------------------------------+
+|                    Spring Boot API (Port 8080)                        |
+|                                                                       |
+|  [ Presentation Layer ]  --> REST Controllers, DTO Mappers            |
+|  [ Security Layer ]      --> Spring Security, JWT Cookie Filter       |
+|  [ Application Layer ]   --> Service Interfaces & Implementations     |
+|  [ Domain Layer ]        --> Domain Entities & Repositories           |
++-----------------------------------------------------------------------+
+                                   |
+                             JDBC Connection
+                                   v
++-----------------------------------------------------------------------+
+|                   PostgreSQL 17 Database (Port 5432)                  |
+|                  (Managed with Flyway Schema Migrations)              |
++-----------------------------------------------------------------------+
 ```
 
-Business logic is isolated inside the service layer while controllers remain thin and focused on HTTP request handling.
-
 ---
 
-# Technology Stack
-
-## Frontend
-
-* React (In Progress)
-* TypeScript
-* Vite
-* Tailwind CSS
-* shadcn/ui
-* React Router
-* TanStack Query
-* React Hook Form
-* Zod
-* Axios
-* Framer Motion
-
-## Backend
-
-* Java 21
-* Spring Boot
-* Spring Security
-* JWT Authentication
-* Spring Data JPA
-* Hibernate
-* PostgreSQL
-* Flyway
-* Bean Validation
-* OpenAPI / Swagger
-
-## DevOps
-
-* Docker
-* Docker Compose
-
----
-
-# Repository Structure
+## 📁 Repository Structure
 
 ```text
 professional-identity-platform/
-
-├── apps/
-│   ├── backend/
-│   └── frontend/
-│
-├── docs/
-│
-├── postman/
-│
-├── scripts/
-│
 ├── .github/
-│
-└── README.md
+│   └── workflows/
+│       └── ci.yml                 # GitHub Actions CI Pipeline Configuration
+├── apps/
+│   ├── backend/                   # Spring Boot 3 API Monorepo Application
+│   │   ├── src/main/java/         # Application Code (Controllers, Services, Security)
+│   │   ├── src/main/resources/    # Application Config & Flyway DB Migrations
+│   │   ├── src/test/              # JUnit 5 & Integration Test Suites
+│   │   └── Dockerfile             # Multi-stage Backend Dockerfile
+│   └── frontend/                  # React 19 TypeScript SPA Monorepo Application
+│       ├── e2e/                   # Playwright End-to-End Test Specifications
+│       ├── src/                   # React Application Source (Components, Features, Domain)
+│       ├── Dockerfile             # Multi-stage Nginx Frontend Dockerfile
+│       └── nginx.conf             # Production Nginx Web Server Configuration
+├── docs/                          # Architecture, Deployment, and Contributing Specs
+│   ├── ARCHITECTURE.md
+│   ├── DEPLOYMENT.md
+│   └── CONTRIBUTING.md
+├── docker-compose.yml             # Production Container Orchestration Spec
+├── .env.example                   # Local Development Environment Template
+├── .env.production.example        # Production Environment Variable Template
+├── RELEASE_NOTES.md               # Version 1.0.0 Release Notes
+└── README.md                      # Project Documentation Root
 ```
 
 ---
 
-# Backend Highlights
+## 🚀 Getting Started
 
-* Production-style layered architecture
-* UUID-based entities
-* Manual DTO mapping
-* Constructor dependency injection
-* RESTful API design
-* Transaction management
-* Global exception handling
-* Validation using Jakarta Bean Validation
-* JWT-secured endpoints
-* Portfolio aggregation endpoint
-* Profile completion calculation
-* Dockerized development environment
-* Flyway versioned migrations
+### Prerequisites
+- **Node.js**: v22+ & `pnpm`
+- **Java JDK**: 21+ & Maven (`mvnw`)
+- **Docker**: Docker Desktop or Docker Engine + Docker Compose
 
----
-
-# Getting Started
-
-## Prerequisites
-
-* Java 21
-* Maven
-* Docker
-* Docker Compose
-
-## Clone the Repository
-
+### 1. Clone & Configure Environment
 ```bash
-git clone <repository-url>
+git clone https://github.com/saileshwaran-ganesan/professional-identity-platform.git
 cd professional-identity-platform
-```
 
-## Configure Environment Variables
-
-Copy the example environment file.
-
-```bash
+# Create local environment config
 cp .env.example .env
 ```
 
-Update the values inside `.env` before starting the application.
+### 2. Local Development Execution
 
-## Run with Docker
+#### Running Backend
+```bash
+cd apps/backend
+./mvnw spring-boot:run
+```
+
+#### Running Frontend
+```bash
+cd apps/frontend
+pnpm install
+pnpm run dev
+```
+Open `http://localhost:5173` in your browser.
+
+---
+
+## 🐳 Docker Deployment
+
+To launch the complete containerized stack (PostgreSQL, Spring Boot Backend, and Nginx SPA Frontend):
 
 ```bash
-docker compose up --build
+# Build and start all services in detached mode
+docker compose up --build -d
+
+# Verify container health status
+docker compose ps
+```
+- **Public Portfolio & Admin Portal**: `http://localhost`
+- **Backend API Base**: `http://localhost:8080/api/v1`
+- **Actuator Health**: `http://localhost:8080/actuator/health`
+- **Swagger Documentation**: `http://localhost:8080/swagger-ui.html`
+
+---
+
+## 🧪 Running Tests
+
+### Frontend Tests
+```bash
+cd apps/frontend
+
+# Run Type Checker
+pnpm exec tsc --noEmit
+
+# Run ESLint Audit
+pnpm exec eslint . --max-warnings 0
+
+# Run Vitest Component Unit Tests
+pnpm test
+
+# Run Playwright E2E Tests (Mocked API Mode)
+pnpm exec playwright test
+
+# Run Playwright E2E Tests (Real Backend Integration Mode)
+pnpm run test:e2e:integration
 ```
 
-The backend will be available after startup.
+### Backend Tests
+```bash
+cd apps/backend
 
----
-
-# API Documentation
-
-Swagger/OpenAPI documentation is available when the backend is running.
-
-```text
-http://localhost:8080/swagger-ui/index.html
-```
-
-OpenAPI specification:
-
-```text
-http://localhost:8080/api-docs
+# Run JUnit 5 Unit & Spring Boot Integration Tests
+./mvnw test
 ```
 
 ---
 
-# Project Roadmap
+## 🔒 Security Architecture
 
-## Backend
-
-* [x] Authentication
-* [x] JWT Security
-* [x] Portfolio Management APIs
-* [x] Portfolio Aggregation
-* [x] Profile Completion
-* [x] Swagger
-* [x] Flyway
-* [x] Docker
-
-## Frontend
-
-* [ ] Authentication
-* [ ] Dashboard
-* [ ] Portfolio Editor
-* [ ] Public Portfolio
-* [ ] Responsive Design
-* [ ] Deployment
+- **HttpOnly JWT Cookie**: Tokens are stored strictly in `HttpOnly`, `SameSite=Strict` cookies to eliminate XSS token theft vectors.
+- **Fail-Fast Configuration**: Startup validation (`SecurityEnvironmentValidator.java`) halts application boot if `JWT_SECRET` environment variable is omitted in production.
+- **Strict CORS & Security Headers**: Enforces `X-Frame-Options: DENY`, `X-Content-Type-Options: nosniff`, `Referrer-Policy`, and HSTS.
 
 ---
 
-# Documentation
+## 📜 License & Author
 
-Project documentation is available under the `docs/` directory and includes architecture decisions, database design, implementation roadmap, naming conventions, and other technical references.
-
----
-
-# License
-
-This project is currently under active development.
-
-A license will be added before the first public release.
-
----
-
-# Author
-
-Developed by **Saileshwaran Ganesan**.
+Developed with ❤️ by **Saileshwaran Ganesan**.
+Licensed under the [MIT License](LICENSE).

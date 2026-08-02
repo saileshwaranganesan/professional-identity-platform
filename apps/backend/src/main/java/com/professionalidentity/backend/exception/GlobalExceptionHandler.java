@@ -42,7 +42,8 @@ public class GlobalExceptionHandler {
             ProfileNotFoundException.class,
             ProjectNotFoundException.class,
             SkillNotFoundException.class,
-            SocialLinkNotFoundException.class
+            SocialLinkNotFoundException.class,
+            MessageNotFoundException.class
     })
     public ResponseEntity<ApiError> handleNotFoundException(RuntimeException exception) {
         HttpStatus status = HttpStatus.NOT_FOUND;

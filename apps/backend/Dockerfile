@@ -1,13 +1,17 @@
+# Multi-stage Dockerfile for Spring Boot Backend
 FROM maven:3.9.11-eclipse-temurin-21 AS build
 
 WORKDIR /workspace
 
+# Dependency layer caching
 COPY pom.xml .
 RUN mvn --batch-mode --no-transfer-progress dependency:go-offline
 
+# Source compilation and packaging
 COPY src ./src
 RUN mvn --batch-mode --no-transfer-progress -DskipTests package
 
+# Production minimal runtime image
 FROM eclipse-temurin:21-jre
 
 RUN apt-get update \
@@ -18,6 +22,7 @@ WORKDIR /app
 
 COPY --from=build /workspace/target/backend-0.0.1-SNAPSHOT.jar app.jar
 
+# Security: Non-root system user
 RUN useradd --system --uid 10001 appuser
 USER appuser
 

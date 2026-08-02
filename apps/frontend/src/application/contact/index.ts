@@ -1,1 +1,5 @@
-export { useContact } from './queries'
+/*
+ * Contact Application Public API
+ */
+
+export * from './queries'

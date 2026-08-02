@@ -1,0 +1,8 @@
+dist/
+node_modules/
+coverage/
+.git/
+test-results/
+e2e/
+Dockerfile
+.dockerignore

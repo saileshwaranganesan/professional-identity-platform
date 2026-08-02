@@ -2,7 +2,8 @@
  * AppProviders — Global Provider Tree
  *
  * The single location responsible for mounting all global React providers.
- * Mounts QueryProvider (TanStack Query), AuthProvider, and RouterProvider (TanStack Router).
+ * Mounts ErrorBoundary, QueryProvider (TanStack Query), ToastProvider (Global Toasts),
+ * AuthProvider, and RouterProvider (TanStack Router).
  */
 
 import { RouterProvider } from '@tanstack/react-router'
@@ -10,13 +11,20 @@ import { RouterProvider } from '@tanstack/react-router'
 import { router } from '@/app/router'
 import { AuthProvider } from '@/application/auth'
 import { QueryProvider } from '@/application/query'
+import { ErrorBoundary } from '@/components/ui/ErrorBoundary'
+import { ToastProvider } from '@/components/ui/Toast'
 
 export function AppProviders() {
   return (
-    <QueryProvider>
-      <AuthProvider>
-        <RouterProvider router={router} />
-      </AuthProvider>
-    </QueryProvider>
+    <ErrorBoundary>
+      <QueryProvider>
+        <ToastProvider>
+          <AuthProvider>
+            <RouterProvider router={router} />
+          </AuthProvider>
+        </ToastProvider>
+      </QueryProvider>
+    </ErrorBoundary>
   )
 }
+

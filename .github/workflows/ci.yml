@@ -1,0 +1,93 @@
+name: Continuous Integration
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate:
+    name: Build & Test Validation
+    runs-on: ubuntu-latest
+
+    env:
+      JWT_SECRET: "9a8f7e6d5c4b3a2f1e0d9c8b7a6f5e4d3c2b1a0f9e8d7c6b5a4f3e2d1c0b9a8f"
+      POSTGRES_PASSWORD: "ci_test_password"
+      ADMIN_PASSWORD: "Admin@Password123"
+      CI: "true"
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Java JDK 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+          cache: 'maven'
+          cache-dependency-path: 'apps/backend/pom.xml'
+
+      - name: Setup Node.js 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      - name: Cache pnpm store
+        uses: actions/cache@v4
+        with:
+          path: ~/.local/share/pnpm/store
+          key: ${{ runner.os }}-pnpm-${{ hashFiles('apps/frontend/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-
+
+      - name: Install Frontend Dependencies
+        working-directory: ./apps/frontend
+        run: pnpm install --frozen-lockfile
+
+      - name: Frontend Type Check
+        working-directory: ./apps/frontend
+        run: pnpm exec tsc --noEmit
+
+      - name: Frontend ESLint Audit
+        working-directory: ./apps/frontend
+        run: pnpm exec eslint . --max-warnings 0
+
+      - name: Run Backend Unit & Integration Tests
+        working-directory: ./apps/backend
+        run: ./mvnw --batch-mode test
+
+      - name: Run Frontend Vitest Component Tests
+        working-directory: ./apps/frontend
+        run: pnpm test
+
+      - name: Cache Playwright Browsers
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: ${{ runner.os }}-playwright-${{ hashFiles('apps/frontend/pnpm-lock.yaml') }}
+
+      - name: Install Playwright Chromium Browser
+        working-directory: ./apps/frontend
+        run: pnpm exec playwright install chromium --with-deps
+
+      - name: Run Playwright E2E Tests
+        working-directory: ./apps/frontend
+        run: pnpm exec playwright test
+
+      - name: Build Frontend Production Bundle
+        working-directory: ./apps/frontend
+        run: pnpm run build
+
+      - name: Verify Docker Compose Build
+        run: docker compose build

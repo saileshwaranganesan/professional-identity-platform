@@ -29,32 +29,67 @@ public class AuthController {
     private final AuthenticationService authenticationService;
     private final JwtCookieUtil jwtCookieUtil;
     private final CurrentUserService currentUserService;
+    private final com.professionalidentity.backend.common.AuditLogService auditLogService;
 
     public AuthController(
             AuthenticationService authenticationService,
             JwtCookieUtil jwtCookieUtil,
-            CurrentUserService currentUserService
+            CurrentUserService currentUserService,
+            com.professionalidentity.backend.common.AuditLogService auditLogService
     ) {
         this.authenticationService = authenticationService;
         this.jwtCookieUtil = jwtCookieUtil;
         this.currentUserService = currentUserService;
+        this.auditLogService = auditLogService;
     }
 
     @PostMapping("/login")
-    public ResponseEntity<UserResponse> login(@Valid @RequestBody LoginRequest request) {
-        CustomUserDetails userDetails = authenticationService.authenticate(request);
-        String token = authenticationService.generateToken(userDetails);
-        ResponseCookie cookie = jwtCookieUtil.createJwtCookie(token);
+    public ResponseEntity<UserResponse> login(
+            @Valid @RequestBody LoginRequest request,
+            jakarta.servlet.http.HttpServletRequest httpRequest
+    ) {
+        String clientIp = httpRequest.getHeader("X-Forwarded-For");
+        if (clientIp == null || clientIp.isBlank()) {
+            clientIp = httpRequest.getRemoteAddr();
+        }
 
-        UserResponse userResponse = authenticationService.toUserResponse(userDetails);
+        try {
+            CustomUserDetails userDetails = authenticationService.authenticate(request);
+            String token = authenticationService.generateToken(userDetails);
+            ResponseCookie cookie = jwtCookieUtil.createJwtCookie(token);
 
-        return ResponseEntity.ok()
-                .header(HttpHeaders.SET_COOKIE, cookie.toString())
-                .body(userResponse);
+            UserResponse userResponse = authenticationService.toUserResponse(userDetails);
+
+            auditLogService.logAuthAction("LOGIN", request.getEmail(), clientIp, true, "Authentication successful");
+
+            return ResponseEntity.ok()
+                    .header(HttpHeaders.SET_COOKIE, cookie.toString())
+                    .body(userResponse);
+        } catch (Exception e) {
+            auditLogService.logAuthAction("LOGIN", request.getEmail(), clientIp, false, e.getMessage());
+            throw e;
+        }
     }
 
     @PostMapping("/logout")
-    public ResponseEntity<Void> logout() {
+    public ResponseEntity<Void> logout(jakarta.servlet.http.HttpServletRequest httpRequest) {
+        String clientIp = httpRequest.getHeader("X-Forwarded-For");
+        if (clientIp == null || clientIp.isBlank()) {
+            clientIp = httpRequest.getRemoteAddr();
+        }
+
+        String userEmail = "anonymous";
+        try {
+            User user = currentUserService.getCurrentUser();
+            if (user != null) {
+                userEmail = user.getEmail();
+            }
+        } catch (Exception ignored) {
+            // Unauthenticated logout attempt
+        }
+
+        auditLogService.logAuthAction("LOGOUT", userEmail, clientIp, true, "Session cleared");
+
         ResponseCookie cleanCookie = jwtCookieUtil.createCleanJwtCookie();
         return ResponseEntity.ok()
                 .header(HttpHeaders.SET_COOKIE, cleanCookie.toString())
