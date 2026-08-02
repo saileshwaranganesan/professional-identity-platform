@@ -1,3 +1,8 @@
-export { ProjectCard } from './components/ProjectCard'
-export { mockProjects } from './data/mockProjects'
-export type { Project } from './types/project'
+/*
+ * Projects Feature Public API
+ */
+
+export * from './config/projectColumns'
+export * from './components/ProjectForm/ProjectForm'
+export * from './components/ProjectFormModal/ProjectFormModal'
+export * from './components/ProjectCard/ProjectCard'

@@ -1,1 +1,5 @@
-export { useProjects } from './queries'
+/*
+ * Projects Application Public API
+ */
+
+export * from './queries'

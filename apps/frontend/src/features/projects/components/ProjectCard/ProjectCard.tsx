@@ -9,8 +9,7 @@ import { Button } from '@/components/ui/Button'
 import { Card } from '@/components/ui/Card'
 import { Heading } from '@/components/ui/Heading'
 import { Text } from '@/components/ui/Text'
-
-import type { Project } from '../../types/project'
+import type { Project } from '@/domain/projects'
 
 import styles from './ProjectCard.module.css'
 

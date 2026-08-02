@@ -9,7 +9,7 @@ import { Card } from '@/components/ui/Card'
 import { Heading } from '@/components/ui/Heading'
 import { Text } from '@/components/ui/Text'
 
-import type { Experience } from '../../types/experience'
+import type { Experience } from '@/domain/experience'
 
 import styles from './ExperienceCard.module.css'
 
@@ -30,7 +30,7 @@ export function ExperienceCard({
     <Card variant="outlined" padding="medium" className={className}>
       <div className={styles.card ?? ''}>
         <div className={styles.header ?? ''}>
-          <Heading level={3}>{experience.role}</Heading>
+          <Heading level={3}>{experience.position}</Heading>
           <div className={styles.meta ?? ''}>
             <Text as="span" variant="small">
               {experience.company}

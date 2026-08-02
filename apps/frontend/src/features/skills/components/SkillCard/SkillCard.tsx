@@ -1,4 +1,4 @@
-/*
+﻿/*
  * SkillCard Component
  *
  * Feature component for rendering a group of skills by category (Layer 4 — Presentation Layer).
@@ -8,8 +8,7 @@
 import { Card } from '@/components/ui/Card'
 import { Heading } from '@/components/ui/Heading'
 import { Text } from '@/components/ui/Text'
-
-import type { Skill } from '../../types/skill'
+import type { Skill } from '@/domain/skills'
 
 import styles from './SkillCard.module.css'
 

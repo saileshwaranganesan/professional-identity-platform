@@ -1,1 +1,5 @@
-export { useSkills } from './queries'
+﻿/*
+ * Skills Application Public API
+ */
+
+export * from './queries'

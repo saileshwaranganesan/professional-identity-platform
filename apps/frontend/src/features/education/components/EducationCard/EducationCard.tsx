@@ -1,4 +1,4 @@
-/*
+﻿/*
  * EducationCard Component
  *
  * Feature component for rendering a single Education entry (Layer 4 — Presentation Layer).
@@ -8,8 +8,7 @@
 import { Card } from '@/components/ui/Card'
 import { Heading } from '@/components/ui/Heading'
 import { Text } from '@/components/ui/Text'
-
-import type { Education } from '../../types/education'
+import type { Education } from '@/domain/education'
 
 import styles from './EducationCard.module.css'
 
@@ -18,7 +17,21 @@ export interface EducationCardProps {
   className?: string
 }
 
+function formatDate(dateStr: string): string {
+  try {
+    return new Date(dateStr).toLocaleDateString('en-US', { year: 'numeric' })
+  } catch {
+    return dateStr
+  }
+}
+
 export function EducationCard({ education, className }: EducationCardProps) {
+  const period = education.currentlyStudying
+    ? `${formatDate(education.startDate)} — Present`
+    : education.endDate
+    ? `${formatDate(education.startDate)} — ${formatDate(education.endDate)}`
+    : formatDate(education.startDate)
+
   return (
     <Card variant="outlined" padding="medium" className={className}>
       <div className={styles.card ?? ''}>
@@ -32,57 +45,33 @@ export function EducationCard({ education, className }: EducationCardProps) {
               •
             </Text>
             <Text as="span" variant="small">
-              {education.duration}
+              {period}
             </Text>
-            {education.location && (
+            {education.fieldOfStudy && (
               <>
                 <Text as="span" variant="small">
                   •
                 </Text>
                 <Text as="span" variant="small">
-                  {education.location}
+                  {education.fieldOfStudy}
                 </Text>
               </>
             )}
-            {education.cgpa && (
+            {education.grade && (
               <>
                 <Text as="span" variant="small">
                   •
                 </Text>
                 <Text as="span" variant="small">
-                  GPA: {education.cgpa}
+                  Grade: {education.grade}
                 </Text>
               </>
             )}
           </div>
         </div>
 
-        {education.coursework && education.coursework.length > 0 && (
-          <div className={styles.details ?? ''}>
-            <Text variant="muted">Relevant Coursework:</Text>
-            <div className={styles.list ?? ''}>
-              {education.coursework.map((course) => (
-                <span key={course} className={styles.listItem ?? ''}>
-                  <Text as="span" variant="small">
-                    {course}
-                  </Text>
-                </span>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {education.achievements && education.achievements.length > 0 && (
-          <div className={styles.details ?? ''}>
-            <Text variant="muted">Key Achievements:</Text>
-            <div className={styles.bulletList ?? ''}>
-              {education.achievements.map((achievement) => (
-                <Text key={achievement} variant="body">
-                  • {achievement}
-                </Text>
-              ))}
-            </div>
-          </div>
+        {education.description && (
+          <Text variant="body">{education.description}</Text>
         )}
       </div>
     </Card>

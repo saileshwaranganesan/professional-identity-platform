@@ -1,13 +1,13 @@
-/*
+﻿/*
  * Skills Entity Mapper
  *
- * Validates backend payload via Zod and transforms to Skill Presentation Model (FSAS-001 §7.2).
+ * Validates backend payload via Zod and transforms to Skill domain model (FSAS-001 §7.2).
  */
 
-import type { Skill } from '@/features/skills'
 import { ApiError } from '@/infrastructure/http'
 
 import { skillApiSchema } from './schema'
+import type { Skill } from './types'
 
 export function mapSkill(raw: unknown): Skill {
   const result = skillApiSchema.safeParse(raw)
@@ -23,28 +23,14 @@ export function mapSkill(raw: unknown): Skill {
 
   const dto = result.data
 
-  let categoryGroup: Skill['category'] = 'Backend'
-  if (
-    ['Frontend', 'Backend', 'Database', 'DevOps & Tools'].includes(dto.category)
-  ) {
-    categoryGroup = dto.category as Skill['category']
-  }
-
-  let proficiencyLevel: Skill['proficiency'] = undefined
-  if (dto.level) {
-    const lvl = dto.level.toUpperCase()
-    if (lvl.includes('EXPERT')) proficiencyLevel = 'Expert'
-    else if (lvl.includes('ADVANCED') || lvl.includes('INTERMEDIATE'))
-      proficiencyLevel = 'Advanced'
-    else proficiencyLevel = 'Proficient'
-  }
-
   return {
     id: dto.id,
     name: dto.name,
-    category: categoryGroup,
-    ...(proficiencyLevel ? { proficiency: proficiencyLevel } : {}),
-    featured: true,
+    level: dto.level,
+    category: dto.category ?? '',
+    displayOrder: dto.displayOrder,
+    createdAt: dto.createdAt,
+    updatedAt: dto.updatedAt,
   }
 }
 

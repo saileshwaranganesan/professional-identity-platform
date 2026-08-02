@@ -1,13 +1,13 @@
-/*
+﻿/*
  * Experience Entity Mapper
  *
- * Validates backend payload via Zod and transforms to Experience Presentation Model (FSAS-001 §7.2).
+ * Validates backend payload via Zod and transforms to Experience domain model (FSAS-001 §7.2).
  */
 
-import type { Experience } from '@/features/experience'
 import { ApiError } from '@/infrastructure/http'
 
 import { experienceApiSchema } from './schema'
+import type { Experience } from './types'
 
 export function mapExperience(raw: unknown): Experience {
   const result = experienceApiSchema.safeParse(raw)
@@ -28,17 +28,23 @@ export function mapExperience(raw: unknown): Experience {
           .split(',')
           .map((s) => s.trim())
           .filter(Boolean)
-      : dto.technologies
+      : (dto.technologies ?? [])
 
   return {
     id: dto.id,
-    role: dto.position,
     company: dto.company,
-    ...(dto.location ? { location: dto.location } : {}),
-    startDate: dto.startDate,
-    ...(dto.endDate ? { endDate: dto.endDate } : {}),
+    position: dto.position,
+    employmentType: dto.employmentType,
+    employmentStatus: dto.employmentStatus,
+    location: dto.location,
     description: dto.description ?? '',
     technologies: techArray,
+    startDate: dto.startDate,
+    endDate: dto.endDate,
+    currentlyWorking: dto.currentlyWorking,
+    companyWebsite: dto.companyWebsite,
+    companyLogo: dto.companyLogo,
+    displayOrder: dto.displayOrder,
   }
 }
 

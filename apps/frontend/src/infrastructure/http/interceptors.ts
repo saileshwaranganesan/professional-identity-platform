@@ -2,8 +2,8 @@
  * HTTP Infrastructure Interceptors
  *
  * Extensible request/response interceptors.
- * Injects Authorization header when token getter returns a value.
  * Normalizes HTTP failure responses via normalizeError.
+ * Cookie-based auth is handled automatically via withCredentials: true.
  */
 
 import type {
@@ -14,25 +14,10 @@ import type {
 
 import { normalizeError } from './errors'
 
-// Extensible placeholder token getter. Will connect to Auth store in future phases.
-let tokenGetter: (() => string | null) | null = null
-
-export function setTokenGetter(getter: () => string | null): void {
-  tokenGetter = getter
-}
-
 export function setupInterceptors(axiosInstance: AxiosInstance): void {
-  // Request Interceptor — Auth header injection
+  // Request Interceptor — Passes configuration through
   axiosInstance.interceptors.request.use(
-    (config: InternalAxiosRequestConfig) => {
-      if (tokenGetter) {
-        const token = tokenGetter()
-        if (token) {
-          config.headers.Authorization = `Bearer ${token}`
-        }
-      }
-      return config
-    },
+    (config: InternalAxiosRequestConfig) => config,
     (error: unknown) => Promise.reject(normalizeError(error)),
   )
 

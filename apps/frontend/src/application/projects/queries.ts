@@ -1,24 +1,82 @@
 /*
- * Projects Application Query Hooks
+ * Projects Application Server State Hooks
  *
- * Exposes useProjects server state hook (FSAS-001 §5.3).
- * Connected to httpClient + Domain mapper mapProjectsList.
+ * TanStack Query hooks for projects CRUD and status toggles.
+ * Connected to Layer 1 projectsApi transport and Layer 3 domain mappers.
  */
 
-import { useQuery } from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 
-import { mapProjectsList } from '@/domain/projects'
-import type { Project } from '@/features/projects'
-import { httpClient } from '@/infrastructure/http'
+import type { CreateProjectFormData, Project, UpdateProjectFormData } from '@/domain/projects'
+import {
+  createProjectApi,
+  deleteProjectApi,
+  fetchProjectsApi,
+  toggleFeatureProjectApi,
+  togglePublishProjectApi,
+  updateProjectApi,
+} from '@/infrastructure/projects'
 
 import { queryKeys } from '../query/keys'
 
 export function useProjects() {
   return useQuery<Project[]>({
     queryKey: queryKeys.projects.all,
-    queryFn: async () => {
-      const response = await httpClient.get<unknown>('/projects')
-      return mapProjectsList(response.data)
+    queryFn: fetchProjectsApi,
+  })
+}
+
+export function useCreateProject() {
+  const queryClient = useQueryClient()
+
+  return useMutation<Project, Error, CreateProjectFormData>({
+    mutationFn: createProjectApi,
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: queryKeys.projects.all })
+    },
+  })
+}
+
+export function useUpdateProject() {
+  const queryClient = useQueryClient()
+
+  return useMutation<Project, Error, { id: string; data: UpdateProjectFormData }>({
+    mutationFn: ({ id, data }) => updateProjectApi(id, data),
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: queryKeys.projects.all })
+    },
+  })
+}
+
+export function useDeleteProject() {
+  const queryClient = useQueryClient()
+
+  return useMutation<void, Error, string>({
+    mutationFn: deleteProjectApi,
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: queryKeys.projects.all })
+    },
+  })
+}
+
+export function useTogglePublishProject() {
+  const queryClient = useQueryClient()
+
+  return useMutation<Project, Error, { id: string; published: boolean }>({
+    mutationFn: ({ id, published }) => togglePublishProjectApi(id, published),
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: queryKeys.projects.all })
+    },
+  })
+}
+
+export function useToggleFeatureProject() {
+  const queryClient = useQueryClient()
+
+  return useMutation<Project, Error, { id: string; featured: boolean }>({
+    mutationFn: ({ id, featured }) => toggleFeatureProjectApi(id, featured),
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: queryKeys.projects.all })
     },
   })
 }

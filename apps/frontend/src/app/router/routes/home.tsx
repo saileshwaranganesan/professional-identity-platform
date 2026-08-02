@@ -8,7 +8,7 @@
 
 import { useContact } from '@/application/contact'
 import { useEducation } from '@/application/education'
-import { useExperience } from '@/application/experience'
+import { useExperiences } from '@/application/experience'
 import { useProjects } from '@/application/projects'
 import { useSkills } from '@/application/skills'
 import { Button } from '@/components/ui/Button'
@@ -25,13 +25,19 @@ import styles from './home.module.css'
 
 export function HomePage() {
   const { data: projects = [] } = useProjects()
-  const { data: experiences = [] } = useExperience()
+  const { data: experiences = [] } = useExperiences()
   const { data: skills = [] } = useSkills()
   const { data: educationList = [] } = useEducation()
   const { data: contact } = useContact()
 
   const featuredProjects = projects.filter((p) => p.featured)
-  const categories = Array.from(new Set(skills.map((s) => s.category)))
+  const categories = Array.from(
+    new Set(
+      skills
+        .map((s) => s.category)
+        .filter((c): c is string => Boolean(c)),
+    ),
+  )
 
   return (
     <div className={styles.container ?? ''}>

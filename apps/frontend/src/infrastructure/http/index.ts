@@ -6,5 +6,4 @@
 
 export { httpClient } from './client'
 export { ApiError, normalizeError } from './errors'
-export { setTokenGetter } from './interceptors'
 export type { ApiErrorType, NormalizedError, RequestConfig } from './types'

@@ -1,1 +1,5 @@
-export { useEducation } from './queries'
+﻿/*
+ * Education Application Public API
+ */
+
+export * from './queries'

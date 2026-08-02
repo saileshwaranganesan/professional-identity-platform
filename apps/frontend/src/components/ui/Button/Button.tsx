@@ -2,7 +2,7 @@
  * Button Component
  *
  * Primitive reusable UI button component (Layer 4 — Presentation Layer).
- * Supports primary/secondary variants, small/medium sizes, and full-width layout.
+ * Supports primary/secondary/danger variants, small/medium sizes, and full-width layout.
  * Extends standard HTML button attributes for full semantic access.
  */
 
@@ -10,7 +10,7 @@ import type { ButtonHTMLAttributes, ReactNode } from 'react'
 
 import styles from './Button.module.css'
 
-export type ButtonVariant = 'primary' | 'secondary'
+export type ButtonVariant = 'primary' | 'secondary' | 'danger'
 export type ButtonSize = 'small' | 'medium'
 
 export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
@@ -23,6 +23,7 @@ export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 const variantClasses: Record<ButtonVariant, string> = {
   primary: styles.primary ?? '',
   secondary: styles.secondary ?? '',
+  danger: styles.danger ?? '',
 }
 
 const sizeClasses: Record<ButtonSize, string> = {

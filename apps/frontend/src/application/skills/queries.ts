@@ -1,24 +1,62 @@
-/*
- * Skills Application Query Hooks
+﻿/*
+ * Skills Application Server State Hooks
  *
- * Exposes useSkills server state hook (FSAS-001 §5.3).
- * Connected to httpClient + Domain mapper mapSkillsList.
+ * TanStack Query hooks for skills CRUD operations.
+ * Connected to Layer 1 skillsApi transport and Layer 3 domain mappers.
  */
 
-import { useQuery } from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 
-import { mapSkillsList } from '@/domain/skills'
-import type { Skill } from '@/features/skills'
-import { httpClient } from '@/infrastructure/http'
+import type {
+  CreateSkillFormData,
+  Skill,
+  UpdateSkillFormData,
+} from '@/domain/skills'
+import {
+  createSkillApi,
+  deleteSkillApi,
+  fetchSkillsApi,
+  updateSkillApi,
+} from '@/infrastructure/skills'
 
 import { queryKeys } from '../query/keys'
 
 export function useSkills() {
   return useQuery<Skill[]>({
     queryKey: queryKeys.skills.all,
-    queryFn: async () => {
-      const response = await httpClient.get<unknown>('/skills')
-      return mapSkillsList(response.data)
+    queryFn: fetchSkillsApi,
+  })
+}
+
+export function useCreateSkill() {
+  const queryClient = useQueryClient()
+
+  return useMutation<Skill, Error, CreateSkillFormData>({
+    mutationFn: createSkillApi,
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: queryKeys.skills.all })
+    },
+  })
+}
+
+export function useUpdateSkill() {
+  const queryClient = useQueryClient()
+
+  return useMutation<Skill, Error, { id: string; data: UpdateSkillFormData }>({
+    mutationFn: ({ id, data }) => updateSkillApi(id, data),
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: queryKeys.skills.all })
+    },
+  })
+}
+
+export function useDeleteSkill() {
+  const queryClient = useQueryClient()
+
+  return useMutation<void, Error, string>({
+    mutationFn: deleteSkillApi,
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: queryKeys.skills.all })
     },
   })
 }

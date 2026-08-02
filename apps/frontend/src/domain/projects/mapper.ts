@@ -1,13 +1,13 @@
 /*
  * Projects Entity Mapper
  *
- * Validates backend payload via Zod and transforms to Project Presentation Model (FSAS-001 §7.2).
+ * Validates backend payload via Zod and transforms to Project Domain Entity.
  */
 
-import type { Project } from '@/features/projects'
 import { ApiError } from '@/infrastructure/http'
 
 import { projectApiSchema } from './schema'
+import type { Project } from './types'
 
 export function mapProject(raw: unknown): Project {
   const result = projectApiSchema.safeParse(raw)
@@ -33,11 +33,20 @@ export function mapProject(raw: unknown): Project {
   return {
     id: dto.id,
     title: dto.title,
+    slug: dto.slug,
+    headline: dto.headline ?? null,
+    shortDescription: dto.shortDescription ?? null,
     description: dto.description ?? dto.shortDescription ?? '',
     technologies: techArray,
-    ...(dto.githubUrl ? { githubUrl: dto.githubUrl } : {}),
-    ...(dto.liveDemoUrl ? { liveUrl: dto.liveDemoUrl } : {}),
+    githubUrl: dto.githubUrl ?? null,
+    liveUrl: dto.liveDemoUrl ?? null,
+    documentationUrl: dto.documentationUrl ?? null,
     featured: dto.featured,
+    published: dto.published,
+    status: dto.status,
+    impact: dto.impact ?? null,
+    startDate: dto.startDate ?? null,
+    endDate: dto.endDate ?? null,
   }
 }
 

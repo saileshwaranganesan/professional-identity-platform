@@ -3,6 +3,7 @@ package com.professionalidentity.backend.security;
 import io.jsonwebtoken.JwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -38,19 +39,21 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             HttpServletResponse response,
             FilterChain filterChain
     ) throws ServletException, IOException {
-        String authorizationHeader = request.getHeader(AUTHORIZATION_HEADER);
-        if (authorizationHeader == null || !authorizationHeader.startsWith(BEARER_PREFIX)) {
-            filterChain.doFilter(request, response);
-            return;
+        String token = extractTokenFromCookie(request);
+
+        if (token == null) {
+            String authorizationHeader = request.getHeader(AUTHORIZATION_HEADER);
+            if (authorizationHeader != null && authorizationHeader.startsWith(BEARER_PREFIX)) {
+                token = authorizationHeader.substring(BEARER_PREFIX.length());
+            }
         }
 
-        if (SecurityContextHolder.getContext().getAuthentication() != null) {
+        if (token == null || SecurityContextHolder.getContext().getAuthentication() != null) {
             filterChain.doFilter(request, response);
             return;
         }
 
         try {
-            String token = authorizationHeader.substring(BEARER_PREFIX.length());
             String email = jwtService.extractUsername(token);
 
             if (email != null) {
@@ -74,4 +77,17 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         filterChain.doFilter(request, response);
     }
+
+    private String extractTokenFromCookie(HttpServletRequest request) {
+        if (request.getCookies() == null) {
+            return null;
+        }
+        for (Cookie cookie : request.getCookies()) {
+            if (JwtCookieUtil.COOKIE_NAME.equals(cookie.getName())) {
+                return cookie.getValue();
+            }
+        }
+        return null;
+    }
 }
+

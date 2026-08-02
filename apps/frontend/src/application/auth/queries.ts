@@ -1,0 +1,43 @@
+/*
+ * Auth Application Server State Hooks
+ *
+ * TanStack Query hooks for session restoration, login, and logout.
+ */
+
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+
+import type { LoginCredentials, User } from '@/domain/auth'
+
+import { fetchMeApi, loginApi, logoutApi } from '@/infrastructure/auth'
+import { queryKeys } from '../query/keys'
+
+export function useAuthMe() {
+  return useQuery<User | null>({
+    queryKey: queryKeys.auth.me,
+    queryFn: fetchMeApi,
+    staleTime: 1000 * 60 * 15, // Fresh for 15 minutes
+    retry: false,
+  })
+}
+
+export function useLogin() {
+  const queryClient = useQueryClient()
+
+  return useMutation<User, Error, LoginCredentials>({
+    mutationFn: loginApi,
+    onSuccess: (user) => {
+      queryClient.setQueryData(queryKeys.auth.me, user)
+    },
+  })
+}
+
+export function useLogout() {
+  const queryClient = useQueryClient()
+
+  return useMutation<void, Error, void>({
+    mutationFn: logoutApi,
+    onSuccess: () => {
+      queryClient.clear()
+    },
+  })
+}

@@ -1,10 +1,13 @@
-/*
+﻿/*
  * Query Key Factory
  *
  * Provides centralized strongly-typed query keys to eliminate hardcoded strings (FSAS-001 §5.3).
  */
 
 export const queryKeys = {
+  auth: {
+    me: ['auth', 'me'] as const,
+  },
   projects: {
     all: ['projects'] as const,
     featured: ['projects', 'featured'] as const,
@@ -21,5 +24,9 @@ export const queryKeys = {
   },
   contact: {
     all: ['contact'] as const,
+  },
+  messages: {
+    all: ['messages'] as const,
+    detail: (id: string) => ['messages', id] as const,
   },
 }
