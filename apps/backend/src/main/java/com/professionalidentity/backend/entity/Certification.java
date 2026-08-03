@@ -39,7 +39,7 @@ public class Certification extends BaseEntity {
     private String credentialUrl;
 
     @Column(name = "does_not_expire", nullable = false)
-    private Boolean doesNotExpire;
+    private boolean doesNotExpire;
 
     @Column(name = "display_order")
     private Integer displayOrder;

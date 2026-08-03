@@ -42,7 +42,7 @@ public class Education extends BaseEntity {
     private String description;
 
     @Column(name = "currently_studying", nullable = false)
-    private Boolean currentlyStudying;
+    private boolean currentlyStudying;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "profile_id", nullable = false)

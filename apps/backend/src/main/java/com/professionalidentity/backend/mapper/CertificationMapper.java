@@ -33,7 +33,7 @@ public class CertificationMapper {
         response.setExpiryDate(certification.getExpiryDate());
         response.setCredentialId(certification.getCredentialId());
         response.setCredentialUrl(certification.getCredentialUrl());
-        response.setDoesNotExpire(certification.getDoesNotExpire());
+        response.setDoesNotExpire(certification.isDoesNotExpire());
         response.setDisplayOrder(certification.getDisplayOrder());
         response.setCreatedAt(certification.getCreatedAt());
         response.setUpdatedAt(certification.getUpdatedAt());

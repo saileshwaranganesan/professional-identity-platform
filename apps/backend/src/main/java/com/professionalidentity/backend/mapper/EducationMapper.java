@@ -34,7 +34,7 @@ public class EducationMapper {
         response.setEndDate(education.getEndDate());
         response.setGrade(education.getGrade());
         response.setDescription(education.getDescription());
-        response.setCurrentlyStudying(education.getCurrentlyStudying());
+        response.setCurrentlyStudying(education.isCurrentlyStudying());
         response.setCreatedAt(education.getCreatedAt());
         response.setUpdatedAt(education.getUpdatedAt());
         return response;
