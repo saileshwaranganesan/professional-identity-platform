@@ -48,6 +48,11 @@ export function ProjectForm({
     impact: initialData?.impact ?? '',
     startDate: initialData?.startDate ?? '',
     endDate: initialData?.endDate ?? '',
+    highlights: initialData?.highlights ?? [],
+    blocks: initialData?.blocks ?? [],
+    role: initialData?.role ?? '',
+    duration: initialData?.duration ?? '',
+    teamSize: initialData?.teamSize ?? null,
   })
 
   const [fieldErrors, setFieldErrors] = useState<Partial<Record<keyof CreateProjectFormData, string>>>({})
@@ -133,6 +138,51 @@ export function ProjectForm({
           onChange={(e) => handleChange('headline', e.target.value)}
         />
         {fieldErrors.headline && <span className={styles.inputError}>{fieldErrors.headline}</span>}
+      </div>
+
+      <div className={styles.row}>
+        <div className={styles.field}>
+          <label htmlFor="role" className={styles.label}>
+            Role
+          </label>
+          <Input
+            id="role"
+            placeholder="e.g. Lead Architect"
+            variant={fieldErrors.role ? 'error' : 'default'}
+            fullWidth
+            value={formData.role ?? ''}
+            onChange={(e) => handleChange('role', e.target.value)}
+          />
+        </div>
+        
+        <div className={styles.field}>
+          <label htmlFor="duration" className={styles.label}>
+            Duration
+          </label>
+          <Input
+            id="duration"
+            placeholder="e.g. 6 months"
+            variant={fieldErrors.duration ? 'error' : 'default'}
+            fullWidth
+            value={formData.duration ?? ''}
+            onChange={(e) => handleChange('duration', e.target.value)}
+          />
+        </div>
+
+        <div className={styles.field}>
+          <label htmlFor="teamSize" className={styles.label}>
+            Team Size
+          </label>
+          <Input
+            id="teamSize"
+            type="number"
+            placeholder="e.g. 4"
+            variant={fieldErrors.teamSize ? 'error' : 'default'}
+            fullWidth
+            value={formData.teamSize?.toString() ?? ''}
+            onChange={(e) => handleChange('teamSize', e.target.value ? parseInt(e.target.value) : null)}
+          />
+        </div>
       </div>
 
       <div className={styles.field}>

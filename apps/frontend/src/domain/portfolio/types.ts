@@ -9,13 +9,13 @@ import type { Certification } from '../certifications'
 import type { Education } from '../education'
 import type { Experience } from '../experience'
 import type { Profile } from '../profile'
-import type { Project } from '../projects'
+import type { ProjectSummary } from '../projects'
 import type { Skill } from '../skills'
 import type { SocialLink } from '../socialLinks'
 
 export interface PortfolioData {
   profile: Profile
-  projects: Project[]
+  projects: ProjectSummary[]
   experiences: Experience[]
   educations: Education[]
   skills: Skill[]

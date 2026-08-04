@@ -14,6 +14,6 @@ export async function fetchPublicPortfolioApi(username: string): Promise<Portfol
 }
 
 export async function fetchProjectBySlugApi(slug: string): Promise<Project> {
-  const response = await httpClient.get<unknown>(`/projects/${slug}`)
+  const response = await httpClient.get<unknown>(`/public/projects/${slug}`)
   return mapProject(response.data)
 }

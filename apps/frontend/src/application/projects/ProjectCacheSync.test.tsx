@@ -49,6 +49,8 @@ describe('Project Mutations Cache Synchronization', () => {
     published: true,
     featured: true,
     technologies: [],
+    highlights: [],
+    screenshots: [],
   }
 
   const createWrapper = () => {
@@ -81,6 +83,8 @@ describe('Project Mutations Cache Synchronization', () => {
         status: 'IN_PROGRESS',
         featured: false,
         published: true,
+        highlights: [],
+        screenshots: [],
       })
     })
 
@@ -104,6 +108,8 @@ describe('Project Mutations Cache Synchronization', () => {
           status: 'COMPLETED',
           featured: true,
           published: true,
+          highlights: [],
+          screenshots: [],
         },
       })
     })

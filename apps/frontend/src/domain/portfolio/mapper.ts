@@ -9,7 +9,7 @@ import { mapCertification } from '../certifications'
 import { mapEducation } from '../education'
 import { mapExperience } from '../experience'
 import { mapProfile } from '../profile'
-import { mapProject } from '../projects'
+import { mapProjectSummary } from '../projects'
 import { mapSkill } from '../skills'
 import { mapSocialLink } from '../socialLinks'
 import { portfolioApiSchema } from './schema'
@@ -19,7 +19,7 @@ export function mapPortfolioData(data: unknown): PortfolioData {
   const parsed = portfolioApiSchema.parse(data)
   return {
     profile: mapProfile(parsed.profile),
-    projects: parsed.projects.map(mapProject),
+    projects: parsed.projects.map(mapProjectSummary),
     experiences: parsed.experiences.map(mapExperience),
     educations: parsed.educations.map(mapEducation),
     skills: parsed.skills.map(mapSkill),

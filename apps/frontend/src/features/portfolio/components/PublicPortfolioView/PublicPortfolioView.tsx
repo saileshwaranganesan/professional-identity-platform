@@ -4,8 +4,7 @@
  * Fully dynamic presentation component rendering a professional portfolio.
  * Connected to Layer 3 portfolio hooks. Consumes backend API payload.
  */
-
-import { Link } from '@tanstack/react-router'
+// Removed unused Link import
 
 import { Button } from '@/components/ui/Button'
 import { Card } from '@/components/ui/Card'
@@ -15,6 +14,7 @@ import { Text } from '@/components/ui/Text'
 import { MetaSeo } from '@/components/ui/MetaSeo/MetaSeo'
 import { ContactForm } from '@/features/contact/components/ContactForm/ContactForm'
 import { SocialPlatformIcon } from '@/features/socialLinks/components/SocialPlatformIcon/SocialPlatformIcon'
+import { ProjectCard } from '@/features/projects/components/ProjectCard/ProjectCard'
 import { usePublicPortfolio } from '@/application/portfolio'
 
 import styles from '@/app/router/routes/home.module.css'
@@ -68,7 +68,7 @@ export function PublicPortfolioView({ username = 'admin' }: PublicPortfolioViewP
   } = portfolio
 
   const fullName = [profile.firstName, profile.lastName].filter(Boolean).join(' ') || profile.username
-  const featuredProjects = projects.filter((p) => p.featured || p.published)
+  const featuredProjects = projects.filter((p) => p.featured)
   const categories = Array.from(new Set(skills.map((s) => s.category).filter((c): c is string => Boolean(c))))
 
   const hasProjects = featuredProjects.length > 0
@@ -182,56 +182,9 @@ export function PublicPortfolioView({ username = 'admin' }: PublicPortfolioViewP
           {hasProjects && (
             <section className={styles.section} id="projects">
               <Heading level={2}>Featured Projects</Heading>
-              <div className={styles.grid}>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: '1.5rem', marginTop: '1.5rem' }}>
                 {featuredProjects.map((project) => (
-                  <div key={project.id} className={styles.timelineCard}>
-                    <div className={styles.timelineHeader}>
-                      <Link to="/projects/$slug" params={{ slug: project.slug }}>
-                        <span className={styles.timelineTitle} style={{ color: '#38bdf8', cursor: 'pointer' }}>
-                          {project.title} ↗
-                        </span>
-                      </Link>
-                      <span className={styles.timelineDate}>{project.status}</span>
-                    </div>
-
-                    {project.headline && <div className={styles.timelineSubtitle}>{project.headline}</div>}
-                    {project.shortDescription && (
-                      <p className={styles.timelineDescription}>{project.shortDescription}</p>
-                    )}
-
-                    {project.technologies && project.technologies.length > 0 && (
-                      <div className={styles.badgeGroup}>
-                        {project.technologies.map((tech) => (
-                          <span key={tech} className={styles.badge}>
-                            {tech}
-                          </span>
-                        ))}
-                      </div>
-                    )}
-
-                    <div style={{ display: 'flex', gap: '1rem', marginTop: '0.75rem', fontSize: '0.875rem' }}>
-                      {project.liveUrl && (
-                        <a
-                          href={project.liveUrl}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          style={{ color: '#38bdf8', fontWeight: 500 }}
-                        >
-                          Live Demo ↗
-                        </a>
-                      )}
-                      {project.githubUrl && (
-                        <a
-                          href={project.githubUrl}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          style={{ color: '#94a3b8' }}
-                        >
-                          GitHub Repo ↗
-                        </a>
-                      )}
-                    </div>
-                  </div>
+                  <ProjectCard key={project.slug} project={project} />
                 ))}
               </div>
             </section>

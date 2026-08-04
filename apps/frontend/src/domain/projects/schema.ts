@@ -13,6 +13,22 @@ export const projectStatusEnum = z.enum([
   'ARCHIVED',
 ])
 
+export const blockTypeEnum = z.enum([
+  'MARKDOWN',
+  'GALLERY',
+  'TIMELINE',
+  'METRICS',
+  'TECH_STACK',
+  'VIDEO'
+])
+
+export const projectBlockSchema = z.object({
+  id: z.string(),
+  blockType: blockTypeEnum,
+  displayOrder: z.number(),
+  payload: z.record(z.any()),
+})
+
 export const projectApiSchema = z.object({
   id: z.string(),
   title: z.string(),
@@ -29,7 +45,22 @@ export const projectApiSchema = z.object({
   impact: z.string().nullable().optional(),
   startDate: z.string().nullable().optional(),
   endDate: z.string().nullable().optional(),
+  role: z.string().nullable().optional(),
+  duration: z.string().nullable().optional(),
+  teamSize: z.number().nullable().optional(),
   technologies: z.union([z.array(z.string()), z.string()]).optional().default([]),
+  blocks: z.array(projectBlockSchema).optional().default([]),
+  highlights: z.array(z.string()).optional().default([]),
+})
+
+export const projectSummarySchema = z.object({
+  title: z.string(),
+  slug: z.string(),
+  headline: z.string().nullable().optional(),
+  shortDescription: z.string().nullable().optional(),
+  featured: z.boolean().default(false),
+  status: projectStatusEnum.default('COMPLETED'),
+  highlights: z.array(z.string()).optional().default([]),
 })
 
 export const projectFormSchema = z.object({
@@ -54,4 +85,14 @@ export const projectFormSchema = z.object({
   impact: z.string().optional().or(z.literal('')),
   startDate: z.string().optional().or(z.literal('')),
   endDate: z.string().optional().or(z.literal('')),
+  role: z.string().optional().or(z.literal('')),
+  duration: z.string().optional().or(z.literal('')),
+  teamSize: z.number().optional().nullable(),
+  blocks: z.array(z.object({
+    id: z.string().optional(),
+    blockType: blockTypeEnum,
+    displayOrder: z.number(),
+    payload: z.record(z.any()),
+  })).optional().default([]),
+  highlights: z.array(z.string()).optional().default([]),
 })
