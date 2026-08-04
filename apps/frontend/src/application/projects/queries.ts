@@ -33,8 +33,11 @@ export function useCreateProject() {
 
   return useMutation<Project, Error, CreateProjectFormData>({
     mutationFn: createProjectApi,
-    onSuccess: () => {
-      void queryClient.invalidateQueries({ queryKey: queryKeys.projects.all })
+    onSuccess: async () => {
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: queryKeys.projects.all }),
+        queryClient.invalidateQueries({ queryKey: ['portfolio'] }),
+      ])
       toast.success('Project created successfully.')
     },
     onError: (err) => {
@@ -49,8 +52,11 @@ export function useUpdateProject() {
 
   return useMutation<Project, Error, { id: string; data: UpdateProjectFormData }>({
     mutationFn: ({ id, data }) => updateProjectApi(id, data),
-    onSuccess: () => {
-      void queryClient.invalidateQueries({ queryKey: queryKeys.projects.all })
+    onSuccess: async () => {
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: queryKeys.projects.all }),
+        queryClient.invalidateQueries({ queryKey: ['portfolio'] }),
+      ])
       toast.success('Project updated successfully.')
     },
     onError: (err) => {
@@ -65,8 +71,11 @@ export function useDeleteProject() {
 
   return useMutation<void, Error, string>({
     mutationFn: deleteProjectApi,
-    onSuccess: () => {
-      void queryClient.invalidateQueries({ queryKey: queryKeys.projects.all })
+    onSuccess: async () => {
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: queryKeys.projects.all }),
+        queryClient.invalidateQueries({ queryKey: ['portfolio'] }),
+      ])
       toast.success('Project deleted successfully.')
     },
     onError: (err) => {
@@ -81,8 +90,11 @@ export function useTogglePublishProject() {
 
   return useMutation<Project, Error, { id: string; published: boolean }>({
     mutationFn: ({ id, published }) => togglePublishProjectApi(id, published),
-    onSuccess: () => {
-      void queryClient.invalidateQueries({ queryKey: queryKeys.projects.all })
+    onSuccess: async () => {
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: queryKeys.projects.all }),
+        queryClient.invalidateQueries({ queryKey: ['portfolio'] }),
+      ])
       toast.success('Project status updated successfully.')
     },
     onError: (err) => {
@@ -97,8 +109,11 @@ export function useToggleFeatureProject() {
 
   return useMutation<Project, Error, { id: string; featured: boolean }>({
     mutationFn: ({ id, featured }) => toggleFeatureProjectApi(id, featured),
-    onSuccess: () => {
-      void queryClient.invalidateQueries({ queryKey: queryKeys.projects.all })
+    onSuccess: async () => {
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: queryKeys.projects.all }),
+        queryClient.invalidateQueries({ queryKey: ['portfolio'] }),
+      ])
       toast.success('Project showcase status updated successfully.')
     },
     onError: (err) => {
@@ -106,4 +121,5 @@ export function useToggleFeatureProject() {
     },
   })
 }
+
 
