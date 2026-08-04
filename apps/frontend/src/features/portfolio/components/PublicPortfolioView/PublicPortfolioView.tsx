@@ -10,6 +10,7 @@ import { Link } from '@tanstack/react-router'
 import { Button } from '@/components/ui/Button'
 import { Card } from '@/components/ui/Card'
 import { Heading } from '@/components/ui/Heading'
+import { Text } from '@/components/ui/Text'
 
 import { MetaSeo } from '@/components/ui/MetaSeo/MetaSeo'
 import { ContactForm } from '@/features/contact/components/ContactForm/ContactForm'
@@ -69,6 +70,21 @@ export function PublicPortfolioView({ username = 'admin' }: PublicPortfolioViewP
   const fullName = [profile.firstName, profile.lastName].filter(Boolean).join(' ') || profile.username
   const featuredProjects = projects.filter((p) => p.featured || p.published)
   const categories = Array.from(new Set(skills.map((s) => s.category).filter((c): c is string => Boolean(c))))
+
+  const hasProjects = featuredProjects.length > 0
+  const hasExperiences = experiences.length > 0
+  const hasSkills = skills.length > 0
+  const hasCertifications = certifications.length > 0
+  const hasAchievements = achievements.length > 0
+  const hasEducation = educations.length > 0
+
+  const isPortfolioEmpty =
+    !hasProjects &&
+    !hasExperiences &&
+    !hasSkills &&
+    !hasCertifications &&
+    !hasAchievements &&
+    !hasEducation
 
   return (
     <div className={styles.container}>
@@ -150,211 +166,225 @@ export function PublicPortfolioView({ username = 'admin' }: PublicPortfolioViewP
         )}
       </section>
 
-      {/* --- Featured Projects Section --- */}
-      {featuredProjects.length > 0 && (
-        <section className={styles.section} id="projects">
-          <Heading level={2}>Featured Projects</Heading>
-          <div className={styles.grid}>
-            {featuredProjects.map((project) => (
-              <div key={project.id} className={styles.timelineCard}>
-                <div className={styles.timelineHeader}>
-                  <Link to="/projects/$slug" params={{ slug: project.slug }}>
-                    <span className={styles.timelineTitle} style={{ color: '#38bdf8', cursor: 'pointer' }}>
-                      {project.title} ↗
-                    </span>
-                  </Link>
-                  <span className={styles.timelineDate}>{project.status}</span>
-                </div>
-
-                {project.headline && <div className={styles.timelineSubtitle}>{project.headline}</div>}
-                {project.shortDescription && (
-                  <p className={styles.timelineDescription}>{project.shortDescription}</p>
-                )}
-
-                {project.technologies && project.technologies.length > 0 && (
-                  <div className={styles.badgeGroup}>
-                    {project.technologies.map((tech) => (
-                      <span key={tech} className={styles.badge}>
-                        {tech}
-                      </span>
-                    ))}
-                  </div>
-                )}
-
-                <div style={{ display: 'flex', gap: '1rem', marginTop: '0.75rem', fontSize: '0.875rem' }}>
-                  {project.liveUrl && (
-                    <a
-                      href={project.liveUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      style={{ color: '#38bdf8', fontWeight: 500 }}
-                    >
-                      Live Demo ↗
-                    </a>
-                  )}
-                  {project.githubUrl && (
-                    <a
-                      href={project.githubUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      style={{ color: '#94a3b8' }}
-                    >
-                      GitHub Repo ↗
-                    </a>
-                  )}
-                </div>
-              </div>
-            ))}
-          </div>
+      {isPortfolioEmpty ? (
+        /* --- Case 1: Completely Empty Portfolio Onboarding --- */
+        <section className={styles.section}>
+          <Card variant="flat" padding="medium" className={styles.onboardingCard}>
+            <Heading level={2}>Portfolio Coming Soon</Heading>
+            <Text variant="muted" style={{ maxWidth: '600px', lineHeight: '1.6' }}>
+              This professional portfolio is currently being prepared. Check back soon for projects, experience, technical skills, certifications, achievements, and more.
+            </Text>
+          </Card>
         </section>
-      )}
+      ) : (
+        <>
+          {/* --- Featured Projects Section --- */}
+          {hasProjects && (
+            <section className={styles.section} id="projects">
+              <Heading level={2}>Featured Projects</Heading>
+              <div className={styles.grid}>
+                {featuredProjects.map((project) => (
+                  <div key={project.id} className={styles.timelineCard}>
+                    <div className={styles.timelineHeader}>
+                      <Link to="/projects/$slug" params={{ slug: project.slug }}>
+                        <span className={styles.timelineTitle} style={{ color: '#38bdf8', cursor: 'pointer' }}>
+                          {project.title} ↗
+                        </span>
+                      </Link>
+                      <span className={styles.timelineDate}>{project.status}</span>
+                    </div>
 
-      {/* --- Work Experience Timeline --- */}
-      {experiences.length > 0 && (
-        <section className={styles.section} id="experience">
-          <Heading level={2}>Work Experience</Heading>
-          <div className={styles.stack}>
-            {experiences.map((exp) => (
-              <div key={exp.id} className={styles.timelineCard}>
-                <div className={styles.timelineHeader}>
-                  <div>
-                    <div className={styles.timelineTitle}>{exp.position}</div>
-                    <div className={styles.timelineSubtitle}>{exp.company}</div>
-                  </div>
-                  <div className={styles.timelineDate}>
-                    {exp.startDate} — {exp.currentlyWorking ? 'Present' : exp.endDate}
-                  </div>
-                </div>
+                    {project.headline && <div className={styles.timelineSubtitle}>{project.headline}</div>}
+                    {project.shortDescription && (
+                      <p className={styles.timelineDescription}>{project.shortDescription}</p>
+                    )}
 
-                {exp.description && <p className={styles.timelineDescription}>{exp.description}</p>}
-
-                {exp.technologies && exp.technologies.length > 0 && (
-                  <div className={styles.badgeGroup}>
-                    {exp.technologies.map((tech) => (
-                      <span key={tech} className={styles.badge}>
-                        {tech}
-                      </span>
-                    ))}
-                  </div>
-                )}
-              </div>
-            ))}
-          </div>
-        </section>
-      )}
-
-      {/* --- Technical Skills Section --- */}
-      {skills.length > 0 && (
-        <section className={styles.section} id="skills">
-          <Heading level={2}>Technical Skills</Heading>
-          <div className={styles.grid}>
-            {categories.map((category) => {
-              const catSkills = skills.filter((s) => s.category === category)
-              return (
-                <Card key={category} variant="flat" padding="medium">
-                  <h3 style={{ fontSize: '1rem', fontWeight: 600, color: '#f8fafc', marginBottom: '0.75rem' }}>
-                    {category}
-                  </h3>
-                  <div className={styles.skillChipGroup}>
-                    {catSkills.map((s) => (
-                      <div key={s.id} className={styles.skillChip}>
-                        <span>{s.name}</span>
-                        <span className={styles.skillLevel}>({s.level})</span>
+                    {project.technologies && project.technologies.length > 0 && (
+                      <div className={styles.badgeGroup}>
+                        {project.technologies.map((tech) => (
+                          <span key={tech} className={styles.badge}>
+                            {tech}
+                          </span>
+                        ))}
                       </div>
-                    ))}
-                  </div>
-                </Card>
-              )
-            })}
-          </div>
-        </section>
-      )}
+                    )}
 
-      {/* --- Certifications Section --- */}
-      {certifications.length > 0 && (
-        <section className={styles.section} id="certifications">
-          <Heading level={2}>Certifications & Credentials</Heading>
-          <div className={styles.grid}>
-            {certifications.map((cert) => (
-              <div key={cert.id} className={styles.timelineCard}>
-                <div className={styles.timelineHeader}>
-                  <div className={styles.timelineTitle}>{cert.name}</div>
-                  <span className={styles.timelineDate}>{cert.issuingOrganization}</span>
-                </div>
-                <div style={{ fontSize: '0.8125rem', color: '#94a3b8', marginTop: '0.25rem' }}>
-                  Issued: {cert.issueDate} • {cert.doesNotExpire ? 'No Expiration' : `Expires: ${cert.expiryDate ?? ''}`}
-                </div>
-                {cert.credentialUrl && (
-                  <a
-                    href={cert.credentialUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    style={{ color: '#38bdf8', fontSize: '0.875rem', marginTop: '0.5rem', display: 'inline-block' }}
-                  >
-                    Verify Credential ↗
-                  </a>
-                )}
+                    <div style={{ display: 'flex', gap: '1rem', marginTop: '0.75rem', fontSize: '0.875rem' }}>
+                      {project.liveUrl && (
+                        <a
+                          href={project.liveUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          style={{ color: '#38bdf8', fontWeight: 500 }}
+                        >
+                          Live Demo ↗
+                        </a>
+                      )}
+                      {project.githubUrl && (
+                        <a
+                          href={project.githubUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          style={{ color: '#94a3b8' }}
+                        >
+                          GitHub Repo ↗
+                        </a>
+                      )}
+                    </div>
+                  </div>
+                ))}
               </div>
-            ))}
-          </div>
-        </section>
-      )}
+            </section>
+          )}
 
-      {/* --- Honors & Achievements Section --- */}
-      {achievements.length > 0 && (
-        <section className={styles.section} id="achievements">
-          <Heading level={2}>Honors & Achievements</Heading>
-          <div className={styles.stack}>
-            {achievements.map((item) => (
-              <div key={item.id} className={styles.timelineCard}>
-                <div className={styles.timelineHeader}>
-                  <div className={styles.timelineTitle}>{item.title}</div>
-                  {item.achievementDate && <span className={styles.timelineDate}>{item.achievementDate}</span>}
-                </div>
-                {item.organization && <div className={styles.timelineSubtitle}>{item.organization}</div>}
-                {item.description && <p className={styles.timelineDescription}>{item.description}</p>}
-                {item.achievementUrl && (
-                  <a
-                    href={item.achievementUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    style={{ color: '#38bdf8', fontSize: '0.875rem', marginTop: '0.375rem', display: 'inline-block' }}
-                  >
-                    View Award Link ↗
-                  </a>
-                )}
-              </div>
-            ))}
-          </div>
-        </section>
-      )}
+          {/* --- Work Experience Timeline --- */}
+          {hasExperiences && (
+            <section className={styles.section} id="experience">
+              <Heading level={2}>Work Experience</Heading>
+              <div className={styles.stack}>
+                {experiences.map((exp) => (
+                  <div key={exp.id} className={styles.timelineCard}>
+                    <div className={styles.timelineHeader}>
+                      <div>
+                        <div className={styles.timelineTitle}>{exp.position}</div>
+                        <div className={styles.timelineSubtitle}>{exp.company}</div>
+                      </div>
+                      <div className={styles.timelineDate}>
+                        {exp.startDate} — {exp.currentlyWorking ? 'Present' : exp.endDate}
+                      </div>
+                    </div>
 
-      {/* --- Education Section --- */}
-      {educations.length > 0 && (
-        <section className={styles.section} id="education">
-          <Heading level={2}>Education</Heading>
-          <div className={styles.stack}>
-            {educations.map((edu) => (
-              <div key={edu.id} className={styles.timelineCard}>
-                <div className={styles.timelineHeader}>
-                  <div>
-                    <div className={styles.timelineTitle}>{edu.degree} in {edu.fieldOfStudy}</div>
-                    <div className={styles.timelineSubtitle}>{edu.institution}</div>
+                    {exp.description && <p className={styles.timelineDescription}>{exp.description}</p>}
+
+                    {exp.technologies && exp.technologies.length > 0 && (
+                      <div className={styles.badgeGroup}>
+                        {exp.technologies.map((tech) => (
+                          <span key={tech} className={styles.badge}>
+                            {tech}
+                          </span>
+                        ))}
+                      </div>
+                    )}
                   </div>
-                  <div className={styles.timelineDate}>
-                    {edu.startDate} — {edu.currentlyStudying ? 'Present' : edu.endDate}
-                  </div>
-                </div>
-                {edu.grade && (
-                  <div style={{ fontSize: '0.8125rem', color: '#4ade80', marginTop: '0.25rem' }}>
-                    Grade / GPA: {edu.grade}
-                  </div>
-                )}
-                {edu.description && <p className={styles.timelineDescription}>{edu.description}</p>}
+                ))}
               </div>
-            ))}
-          </div>
-        </section>
+            </section>
+          )}
+
+          {/* --- Technical Skills Section --- */}
+          {hasSkills && (
+            <section className={styles.section} id="skills">
+              <Heading level={2}>Technical Skills</Heading>
+              <div className={styles.grid}>
+                {categories.map((category) => {
+                  const catSkills = skills.filter((s) => s.category === category)
+                  return (
+                    <Card key={category} variant="flat" padding="medium">
+                      <h3 style={{ fontSize: '1rem', fontWeight: 600, color: '#f8fafc', marginBottom: '0.75rem' }}>
+                        {category}
+                      </h3>
+                      <div className={styles.skillChipGroup}>
+                        {catSkills.map((s) => (
+                          <div key={s.id} className={styles.skillChip}>
+                            <span>{s.name}</span>
+                            <span className={styles.skillLevel}>({s.level})</span>
+                          </div>
+                        ))}
+                      </div>
+                    </Card>
+                  )
+                })}
+              </div>
+            </section>
+          )}
+
+          {/* --- Certifications Section --- */}
+          {hasCertifications && (
+            <section className={styles.section} id="certifications">
+              <Heading level={2}>Certifications & Credentials</Heading>
+              <div className={styles.grid}>
+                {certifications.map((cert) => (
+                  <div key={cert.id} className={styles.timelineCard}>
+                    <div className={styles.timelineHeader}>
+                      <div className={styles.timelineTitle}>{cert.name}</div>
+                      <span className={styles.timelineDate}>{cert.issuingOrganization}</span>
+                    </div>
+                    <div style={{ fontSize: '0.8125rem', color: '#94a3b8', marginTop: '0.25rem' }}>
+                      Issued: {cert.issueDate} • {cert.doesNotExpire ? 'No Expiration' : `Expires: ${cert.expiryDate ?? ''}`}
+                    </div>
+                    {cert.credentialUrl && (
+                      <a
+                        href={cert.credentialUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        style={{ color: '#38bdf8', fontSize: '0.875rem', marginTop: '0.5rem', display: 'inline-block' }}
+                      >
+                        Verify Credential ↗
+                      </a>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </section>
+          )}
+
+          {/* --- Honors & Achievements Section --- */}
+          {hasAchievements && (
+            <section className={styles.section} id="achievements">
+              <Heading level={2}>Honors & Achievements</Heading>
+              <div className={styles.stack}>
+                {achievements.map((item) => (
+                  <div key={item.id} className={styles.timelineCard}>
+                    <div className={styles.timelineHeader}>
+                      <div className={styles.timelineTitle}>{item.title}</div>
+                      {item.achievementDate && <span className={styles.timelineDate}>{item.achievementDate}</span>}
+                    </div>
+                    {item.organization && <div className={styles.timelineSubtitle}>{item.organization}</div>}
+                    {item.description && <p className={styles.timelineDescription}>{item.description}</p>}
+                    {item.achievementUrl && (
+                      <a
+                        href={item.achievementUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        style={{ color: '#38bdf8', fontSize: '0.875rem', marginTop: '0.375rem', display: 'inline-block' }}
+                      >
+                        View Award Link ↗
+                      </a>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </section>
+          )}
+
+          {/* --- Education Section --- */}
+          {hasEducation && (
+            <section className={styles.section} id="education">
+              <Heading level={2}>Education</Heading>
+              <div className={styles.stack}>
+                {educations.map((edu) => (
+                  <div key={edu.id} className={styles.timelineCard}>
+                    <div className={styles.timelineHeader}>
+                      <div>
+                        <div className={styles.timelineTitle}>{edu.degree} in {edu.fieldOfStudy}</div>
+                        <div className={styles.timelineSubtitle}>{edu.institution}</div>
+                      </div>
+                      <div className={styles.timelineDate}>
+                        {edu.startDate} — {edu.currentlyStudying ? 'Present' : edu.endDate}
+                      </div>
+                    </div>
+                    {edu.grade && (
+                      <div style={{ fontSize: '0.8125rem', color: '#4ade80', marginTop: '0.25rem' }}>
+                        Grade / GPA: {edu.grade}
+                      </div>
+                    )}
+                    {edu.description && <p className={styles.timelineDescription}>{edu.description}</p>}
+                  </div>
+                ))}
+              </div>
+            </section>
+          )}
+        </>
       )}
 
       {/* --- Contact Section --- */}
@@ -367,3 +397,4 @@ export function PublicPortfolioView({ username = 'admin' }: PublicPortfolioViewP
     </div>
   )
 }
+

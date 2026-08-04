@@ -45,6 +45,7 @@ export function useLogout() {
   return useMutation<void, Error, void>({
     mutationFn: logoutApi,
     onSuccess: () => {
+      queryClient.setQueryData(queryKeys.auth.me, null)
       queryClient.clear()
       toast.success('Logout successful.')
     },
