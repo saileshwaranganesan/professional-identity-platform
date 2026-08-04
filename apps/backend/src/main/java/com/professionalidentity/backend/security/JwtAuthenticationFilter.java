@@ -74,12 +74,17 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             return;
         }
 
+        String maskedToken = (token.length() > 20) ? token.substring(0, 20) + "..." : token;
+        log.info("[AUTH-DEBUG] Request URI: {} | tokenPrefix: {} | Executing jwtService.extractUsername()", uri, maskedToken);
+
         try {
-            log.info("[AUTH-DEBUG] Request URI: {} | Executing jwtService.extractUsername()", uri);
             String email = jwtService.extractUsername(token);
+            log.info("[AUTH-DEBUG] Request URI: {} | extractedEmail: {} | Executing loadUserByUsername()", uri, email);
 
             if (email != null) {
                 UserDetails userDetails = customUserDetailsService.loadUserByUsername(email);
+                log.info("[AUTH-DEBUG] Request URI: {} | loadUserByUsername SUCCEEDED for email: {}", uri, email);
+
                 boolean valid = jwtService.isTokenValid(token, userDetails);
                 log.info("[AUTH-DEBUG] Request URI: {} | userDetails.isEnabled(): {} | jwtService.isTokenValid(): {}",
                         uri, userDetails.isEnabled(), valid);
@@ -95,11 +100,16 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                             new WebAuthenticationDetailsSource().buildDetails(request)
                     );
                     SecurityContextHolder.getContext().setAuthentication(authentication);
-                    log.info("[AUTH-DEBUG] Request URI: {} | SecurityContextHolder.setAuthentication() EXECUTED successfully", uri);
+                    log.info("[AUTH-DEBUG] Request URI: {} | SecurityContextHolder.setAuthentication() EXECUTED successfully for principal: {}",
+                            uri, userDetails.getUsername());
+                } else {
+                    log.warn("[AUTH-DEBUG] Request URI: {} | SecurityContextHolder.setAuthentication() SKIPPED (isEnabled: {}, valid: {})",
+                            uri, userDetails.isEnabled(), valid);
                 }
             }
         } catch (JwtException | IllegalArgumentException | UsernameNotFoundException e) {
-            log.info("[AUTH-DEBUG] Request URI: {} | Exception during JWT processing: {}", uri, e.getClass().getSimpleName());
+            log.error("[AUTH-DEBUG] Request URI: {} | Exception during JWT processing: {} | Message: {}",
+                    uri, e.getClass().getName(), e.getMessage());
             SecurityContextHolder.clearContext();
         }
 
