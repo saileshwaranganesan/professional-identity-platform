@@ -44,9 +44,11 @@ describe('Project Mutations Cache Synchronization', () => {
     id: 'proj-1',
     title: 'Test Project',
     slug: 'test-project',
-    status: 'Completed',
+    description: 'Project description',
+    status: 'COMPLETED',
     published: true,
     featured: true,
+    technologies: [],
   }
 
   const createWrapper = () => {
@@ -75,7 +77,10 @@ describe('Project Mutations Cache Synchronization', () => {
         title: 'New Project',
         slug: 'new-project',
         shortDescription: 'Short desc',
-        status: 'In Progress',
+        description: 'Detailed description',
+        status: 'IN_PROGRESS',
+        featured: false,
+        published: true,
       })
     })
 
@@ -90,7 +95,17 @@ describe('Project Mutations Cache Synchronization', () => {
     const { result } = renderHook(() => useUpdateProject(), { wrapper: createWrapper() })
 
     await act(async () => {
-      await result.current.mutateAsync({ id: 'proj-1', data: { title: 'Updated' } })
+      await result.current.mutateAsync({
+        id: 'proj-1',
+        data: {
+          title: 'Updated',
+          slug: 'updated',
+          description: 'Updated description',
+          status: 'COMPLETED',
+          featured: true,
+          published: true,
+        },
+      })
     })
 
     expect(invalidateSpy).toHaveBeenCalledWith({ queryKey: queryKeys.projects.all })
@@ -113,15 +128,23 @@ describe('Project Mutations Cache Synchronization', () => {
 
   it('invalidates both projects and portfolio query keys on toggle publish/feature', async () => {
     mockTogglePublishProjectApi.mockResolvedValueOnce(mockProject)
+    mockToggleFeatureProjectApi.mockResolvedValueOnce(mockProject)
     const invalidateSpy = vi.spyOn(queryClient, 'invalidateQueries')
 
-    const { result } = renderHook(() => useTogglePublishProject(), { wrapper: createWrapper() })
+    const { result: publishHook } = renderHook(() => useTogglePublishProject(), {
+      wrapper: createWrapper(),
+    })
+    const { result: featureHook } = renderHook(() => useToggleFeatureProject(), {
+      wrapper: createWrapper(),
+    })
 
     await act(async () => {
-      await result.current.mutateAsync({ id: 'proj-1', published: false })
+      await publishHook.current.mutateAsync({ id: 'proj-1', published: false })
+      await featureHook.current.mutateAsync({ id: 'proj-1', featured: false })
     })
 
     expect(invalidateSpy).toHaveBeenCalledWith({ queryKey: queryKeys.projects.all })
     expect(invalidateSpy).toHaveBeenCalledWith({ queryKey: ['portfolio'] })
   })
 })
+
