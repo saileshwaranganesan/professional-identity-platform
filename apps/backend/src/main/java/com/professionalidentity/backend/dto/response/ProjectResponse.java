@@ -7,6 +7,7 @@ import lombok.Setter;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
 @Getter
@@ -31,4 +32,11 @@ public class ProjectResponse {
     private LocalDate endDate;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+
+    private String role;
+    private String duration;
+    private Integer teamSize;
+
+    private List<ProjectBlockDto> blocks;
+    private List<String> highlights;
 }

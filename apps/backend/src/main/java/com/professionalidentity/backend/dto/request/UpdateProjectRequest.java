@@ -1,6 +1,7 @@
 package com.professionalidentity.backend.dto.request;
 
 import com.professionalidentity.backend.entity.enums.ProjectStatus;
+import com.professionalidentity.backend.dto.response.ProjectBlockDto;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -10,6 +11,7 @@ import lombok.Setter;
 import org.hibernate.validator.constraints.URL;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Getter
 @Setter
@@ -56,4 +58,11 @@ public class UpdateProjectRequest {
 
     @NotNull
     private ProjectStatus status;
+
+    private String role;
+    private String duration;
+    private Integer teamSize;
+
+    private List<ProjectBlockDto> blocks;
+    private List<String> highlights;
 }

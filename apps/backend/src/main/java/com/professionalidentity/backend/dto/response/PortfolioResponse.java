@@ -12,7 +12,7 @@ import java.util.List;
 public class PortfolioResponse {
 
     private ProfileResponse profile;
-    private List<ProjectResponse> projects;
+    private List<ProjectSummaryResponse> projects;
     private List<ExperienceResponse> experiences;
     private List<EducationResponse> educations;
     private List<SkillResponse> skills;

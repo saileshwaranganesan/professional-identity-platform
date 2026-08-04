@@ -2,7 +2,9 @@ package com.professionalidentity.backend.controller;
 
 import com.professionalidentity.backend.constant.ApplicationConstants;
 import com.professionalidentity.backend.dto.response.PortfolioResponse;
+import com.professionalidentity.backend.dto.response.ProjectResponse;
 import com.professionalidentity.backend.service.PortfolioService;
+import com.professionalidentity.backend.service.ProjectService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirements;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
@@ -18,13 +20,20 @@ import org.springframework.web.bind.annotation.RestController;
 public class PublicPortfolioController {
 
     private final PortfolioService portfolioService;
+    private final ProjectService projectService;
 
-    public PublicPortfolioController(PortfolioService portfolioService) {
+    public PublicPortfolioController(PortfolioService portfolioService, ProjectService projectService) {
         this.portfolioService = portfolioService;
+        this.projectService = projectService;
     }
 
     @GetMapping("/{username}")
     public ResponseEntity<PortfolioResponse> getPortfolioByUsername(@PathVariable String username) {
         return ResponseEntity.ok(portfolioService.getPortfolioByUsername(username));
+    }
+
+    @GetMapping("/projects/{slug}")
+    public ResponseEntity<ProjectResponse> getProjectBySlug(@PathVariable String slug) {
+        return ResponseEntity.ok(projectService.getProjectBySlug(slug));
     }
 }

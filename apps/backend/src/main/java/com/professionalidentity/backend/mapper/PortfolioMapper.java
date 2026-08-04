@@ -59,7 +59,7 @@ public class PortfolioMapper {
     ) {
         PortfolioResponse response = new PortfolioResponse();
         response.setProfile(profileMapper.toResponse(profile));
-        response.setProjects(projectMapper.toResponseList(projects));
+        response.setProjects(projectMapper.toSummaryResponseList(projects));
         response.setExperiences(experienceMapper.toResponseList(experiences));
         response.setEducations(educations.stream().map(educationMapper::toResponse).toList());
         response.setSkills(skills.stream().map(skillMapper::toResponse).toList());
