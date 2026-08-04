@@ -50,8 +50,10 @@ export function LoginForm() {
 
     try {
       setIsSubmitting(true)
-      await login(result.data)
-      await navigate({ to: '/admin' })
+      const user = await login(result.data)
+      if (user && user.role === 'ADMIN') {
+        await navigate({ to: '/admin', replace: true })
+      }
     } catch (err: unknown) {
       const errorMsg =
         err instanceof Error ? err.message : 'Invalid credentials. Please try again.'

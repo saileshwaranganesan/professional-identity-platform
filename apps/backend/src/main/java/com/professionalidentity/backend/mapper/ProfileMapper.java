@@ -24,4 +24,37 @@ public class ProfileMapper {
         response.setUpdatedAt(profile.getUpdatedAt());
         return response;
     }
+
+    public void updateEntity(Profile profile, com.professionalidentity.backend.dto.request.UpdateProfileRequest request) {
+        if (request.getUsername() != null) {
+            profile.setUsername(request.getUsername());
+        }
+        if (request.getFirstName() != null) {
+            profile.setFirstName(request.getFirstName());
+        }
+        if (request.getLastName() != null) {
+            profile.setLastName(request.getLastName());
+        }
+        if (request.getHeadline() != null) {
+            profile.setHeadline(request.getHeadline());
+        }
+        if (request.getBio() != null) {
+            profile.setBio(request.getBio());
+        }
+        if (request.getLocation() != null) {
+            profile.setLocation(request.getLocation());
+        }
+        if (request.getWebsite() != null) {
+            profile.setWebsite(request.getWebsite());
+        }
+        if (request.getPhone() != null) {
+            profile.setPhone(request.getPhone());
+        }
+        if (request.getProfileImagePath() != null) {
+            profile.setProfileImagePath(request.getProfileImagePath());
+        }
+        if (request.getBannerImagePath() != null) {
+            profile.setBannerImagePath(request.getBannerImagePath());
+        }
+    }
 }

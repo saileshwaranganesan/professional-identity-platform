@@ -48,7 +48,7 @@ describe('LoginForm Component', () => {
   })
 
   it('calls login function and navigates to admin dashboard on valid credentials', async () => {
-    mockLogin.mockResolvedValueOnce({})
+    mockLogin.mockResolvedValueOnce({ id: '1', email: 'admin@example.com', role: 'ADMIN' })
 
     render(<LoginForm />)
 
@@ -66,7 +66,7 @@ describe('LoginForm Component', () => {
         email: 'admin@example.com',
         password: 'Admin@123456',
       })
-      expect(mockNavigate).toHaveBeenCalledWith({ to: '/admin' })
+      expect(mockNavigate).toHaveBeenCalledWith({ to: '/admin', replace: true })
     })
   })
 })

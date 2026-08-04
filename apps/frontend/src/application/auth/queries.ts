@@ -27,7 +27,8 @@ export function useLogin() {
 
   return useMutation<User, Error, LoginCredentials>({
     mutationFn: loginApi,
-    onSuccess: (user) => {
+    onSuccess: async (user) => {
+      await queryClient.cancelQueries({ queryKey: queryKeys.auth.me })
       queryClient.setQueryData(queryKeys.auth.me, user)
       toast.success('Login successful.')
     },
@@ -52,4 +53,3 @@ export function useLogout() {
     },
   })
 }
-

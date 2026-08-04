@@ -24,12 +24,17 @@ import { HomePage } from './routes/home'
 
 // Lazy load secondary public & admin routes
 const AboutPage = lazy(() => import('./routes/about').then((m) => ({ default: m.AboutPage })))
+const PublicPortfolioPage = lazy(() => import('./routes/publicPortfolio').then((m) => ({ default: m.PublicPortfolioPage })))
+const ProjectDetailPage = lazy(() => import('./routes/projectDetail').then((m) => ({ default: m.ProjectDetailPage })))
 const LoginPage = lazy(() => import('./routes/login').then((m) => ({ default: m.LoginPage })))
 const AdminDashboardPage = lazy(() => import('./routes/admin/dashboard').then((m) => ({ default: m.AdminDashboardPage })))
 const AdminProjectsPage = lazy(() => import('./routes/admin/projects').then((m) => ({ default: m.AdminProjectsPage })))
 const AdminExperiencePage = lazy(() => import('./routes/admin/experience').then((m) => ({ default: m.AdminExperiencePage })))
 const AdminSkillsPage = lazy(() => import('./routes/admin/skills').then((m) => ({ default: m.AdminSkillsPage })))
 const AdminEducationPage = lazy(() => import('./routes/admin/education').then((m) => ({ default: m.AdminEducationPage })))
+const AdminCertificationsPage = lazy(() => import('./routes/admin/certifications').then((m) => ({ default: m.AdminCertificationsPage })))
+const AdminAchievementsPage = lazy(() => import('./routes/admin/achievements').then((m) => ({ default: m.AdminAchievementsPage })))
+const AdminSocialLinksPage = lazy(() => import('./routes/admin/social-links').then((m) => ({ default: m.AdminSocialLinksPage })))
 const AdminMessagesPage = lazy(() => import('./routes/admin/messages').then((m) => ({ default: m.AdminMessagesPage })))
 const AdminSettingsPage = lazy(() => import('./routes/admin/settings').then((m) => ({ default: m.AdminSettingsPage })))
 
@@ -79,6 +84,22 @@ const aboutRoute = createRoute({
   path: '/about',
   component: function AboutRouteComponent() {
     return <LazyRoute Component={AboutPage} />
+  },
+})
+
+const publicPortfolioRoute = createRoute({
+  getParentRoute: () => publicLayoutRoute,
+  path: '/public/$username',
+  component: function PublicPortfolioRouteComponent() {
+    return <LazyRoute Component={PublicPortfolioPage} />
+  },
+})
+
+const projectDetailRoute = createRoute({
+  getParentRoute: () => publicLayoutRoute,
+  path: '/projects/$slug',
+  component: function ProjectDetailRouteComponent() {
+    return <LazyRoute Component={ProjectDetailPage} />
   },
 })
 
@@ -145,6 +166,30 @@ const adminEducationRoute = createRoute({
   },
 })
 
+const adminCertificationsRoute = createRoute({
+  getParentRoute: () => adminLayoutRoute,
+  path: '/certifications',
+  component: function AdminCertificationsRouteComponent() {
+    return <LazyRoute Component={AdminCertificationsPage} />
+  },
+})
+
+const adminAchievementsRoute = createRoute({
+  getParentRoute: () => adminLayoutRoute,
+  path: '/achievements',
+  component: function AdminAchievementsRouteComponent() {
+    return <LazyRoute Component={AdminAchievementsPage} />
+  },
+})
+
+const adminSocialLinksRoute = createRoute({
+  getParentRoute: () => adminLayoutRoute,
+  path: '/social-links',
+  component: function AdminSocialLinksRouteComponent() {
+    return <LazyRoute Component={AdminSocialLinksPage} />
+  },
+})
+
 const adminMessagesRoute = createRoute({
   getParentRoute: () => adminLayoutRoute,
   path: '/messages',
@@ -162,7 +207,7 @@ const adminSettingsRoute = createRoute({
 })
 
 const routeTree = rootRoute.addChildren([
-  publicLayoutRoute.addChildren([indexRoute, aboutRoute]),
+  publicLayoutRoute.addChildren([indexRoute, aboutRoute, publicPortfolioRoute, projectDetailRoute]),
   loginRoute,
   adminLayoutRoute.addChildren([
     adminDashboardRoute,
@@ -170,6 +215,9 @@ const routeTree = rootRoute.addChildren([
     adminExperienceRoute,
     adminSkillsRoute,
     adminEducationRoute,
+    adminCertificationsRoute,
+    adminAchievementsRoute,
+    adminSocialLinksRoute,
     adminMessagesRoute,
     adminSettingsRoute,
   ]),

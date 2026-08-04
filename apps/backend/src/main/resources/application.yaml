@@ -27,6 +27,9 @@ server:
 jwt:
   secret: ${JWT_SECRET}
   expiration: ${JWT_EXPIRATION:24h}
+  cookie:
+    secure: ${COOKIE_SECURE:true}
+    same-site: ${COOKIE_SAME_SITE:None}
 
 admin:
   name: ${ADMIN_NAME:Administrator}

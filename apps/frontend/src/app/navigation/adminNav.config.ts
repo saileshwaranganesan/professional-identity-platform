@@ -9,7 +9,7 @@ export interface AdminNavItem {
   id: string
   label: string
   path: string
-  iconName: 'dashboard' | 'projects' | 'experience' | 'skills' | 'education' | 'messages' | 'settings'
+  iconName: 'dashboard' | 'projects' | 'experience' | 'skills' | 'education' | 'certifications' | 'achievements' | 'social-links' | 'messages' | 'settings'
   badge?: string
 }
 
@@ -43,6 +43,24 @@ export const ADMIN_NAV_ITEMS: AdminNavItem[] = [
     label: 'Education',
     path: '/admin/education',
     iconName: 'education',
+  },
+  {
+    id: 'certifications',
+    label: 'Certifications',
+    path: '/admin/certifications',
+    iconName: 'certifications',
+  },
+  {
+    id: 'achievements',
+    label: 'Achievements',
+    path: '/admin/achievements',
+    iconName: 'achievements',
+  },
+  {
+    id: 'social-links',
+    label: 'Social Links',
+    path: '/admin/social-links',
+    iconName: 'social-links',
   },
   {
     id: 'messages',

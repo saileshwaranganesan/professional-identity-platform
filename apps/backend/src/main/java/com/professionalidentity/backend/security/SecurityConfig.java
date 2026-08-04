@@ -70,7 +70,7 @@ public class SecurityConfig {
                                     "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; " +
                                     "font-src 'self' https://fonts.gstatic.com data:; " +
                                     "img-src 'self' data: https:; " +
-                                    "connect-src 'self' http://localhost:* http://127.0.0.1:*"
+                                    "connect-src 'self' http://localhost:* http://127.0.0.1:* https:"
                             )
                     );
                     if (hstsEnabled) {
@@ -113,7 +113,8 @@ public class SecurityConfig {
                                         "/swagger-ui/**",
                                         "/api-docs/**"
                                 ).permitAll()
-                                .requestMatchers(HttpMethod.GET, "/api/v1/public/*").permitAll()
+                                .requestMatchers(HttpMethod.GET, "/api/v1/public/*", "/api/v1/public/**").permitAll()
+                                .requestMatchers(HttpMethod.GET, "/api/v1/projects", "/api/v1/projects/**").permitAll()
                                 .anyRequest().authenticated()
                 )
 
