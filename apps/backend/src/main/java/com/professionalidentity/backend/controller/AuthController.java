@@ -94,6 +94,7 @@ public class AuthController {
 
         auditLogService.logAuthAction("LOGOUT", userEmail, clientIp, true, "Session cleared");
 
+        org.springframework.security.core.context.SecurityContextHolder.clearContext();
         ResponseCookie cleanCookie = jwtCookieUtil.createCleanJwtCookie();
         return ResponseEntity.ok()
                 .header(HttpHeaders.SET_COOKIE, cleanCookie.toString())
