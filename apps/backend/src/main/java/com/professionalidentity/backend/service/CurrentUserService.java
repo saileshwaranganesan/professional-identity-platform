@@ -50,12 +50,12 @@ public class CurrentUserService {
             throw new UnauthorizedException();
         }
 
-        Optional<User> userOpt = userRepository.findById(userDetails.getUserId());
-        log.info("[AUTH-DEBUG] CurrentUserService findById(userId: {}) | userFoundInDb: {}",
+        Optional<User> userOpt = userRepository.findWithProfileById(userDetails.getUserId());
+        log.info("[AUTH-DEBUG] CurrentUserService findWithProfileById(userId: {}) | userFoundInDb: {}",
                 userDetails.getUserId(), userOpt.isPresent());
 
         return userOpt.orElseThrow(() -> {
-            log.error("[AUTH-DEBUG] CurrentUserService findById returned empty -> Throwing UnauthorizedException");
+            log.error("[AUTH-DEBUG] CurrentUserService findWithProfileById returned empty -> Throwing UnauthorizedException");
             return new UnauthorizedException();
         });
     }
