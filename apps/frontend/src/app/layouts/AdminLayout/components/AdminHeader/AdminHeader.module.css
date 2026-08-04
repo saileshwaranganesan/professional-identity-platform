@@ -55,8 +55,8 @@
   width: 36px;
   height: 36px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #38bdf8, #818cf8);
-  color: #0f172a;
+  background: var(--color-admin-accent, #34d399);
+  color: #090d16;
   font-weight: 700;
   font-size: 0.875rem;
   display: flex;
@@ -79,7 +79,7 @@
 
 .userRole {
   font-size: 0.75rem;
-  color: #38bdf8;
+  color: var(--color-admin-accent, #34d399);
   line-height: 1.2;
 }
 
