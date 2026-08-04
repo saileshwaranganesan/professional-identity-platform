@@ -1,6 +1,8 @@
 package com.professionalidentity.backend.security;
 
 import com.professionalidentity.backend.config.JwtProperties;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseCookie;
 import org.springframework.stereotype.Component;
@@ -9,6 +11,8 @@ import java.time.Duration;
 
 @Component
 public class JwtCookieUtil {
+
+    private static final Logger log = LoggerFactory.getLogger(JwtCookieUtil.class);
 
     public static final String COOKIE_NAME = "jwt";
 
@@ -29,8 +33,14 @@ public class JwtCookieUtil {
         this.partitioned = partitioned;
     }
 
+    @jakarta.annotation.PostConstruct
+    public void logResolvedConfiguration() {
+        log.info("JWT COOKIE CONFIG\nsecure={}\nsameSite={}\npartitioned={}\nexpiration={}",
+                secure, sameSite, partitioned, expiration);
+    }
+
     public ResponseCookie createJwtCookie(String token) {
-        return ResponseCookie.from(COOKIE_NAME, token)
+        ResponseCookie cookie = ResponseCookie.from(COOKIE_NAME, token)
                 .httpOnly(true)
                 .secure(secure)
                 .path("/")
@@ -38,10 +48,15 @@ public class JwtCookieUtil {
                 .sameSite(sameSite)
                 .partitioned(partitioned)
                 .build();
+
+        log.info("[COOKIE]\nname={}\ndomain=host-only\npath={}\nsecure={}\nsameSite={}\npartitioned={}",
+                COOKIE_NAME, cookie.getPath(), cookie.isSecure(), cookie.getSameSite(), cookie.isPartitioned());
+
+        return cookie;
     }
 
     public ResponseCookie createCleanJwtCookie() {
-        return ResponseCookie.from(COOKIE_NAME, "")
+        ResponseCookie cookie = ResponseCookie.from(COOKIE_NAME, "")
                 .httpOnly(true)
                 .secure(secure)
                 .path("/")
@@ -49,5 +64,10 @@ public class JwtCookieUtil {
                 .sameSite(sameSite)
                 .partitioned(partitioned)
                 .build();
+
+        log.info("[COOKIE DELETE]\nname={}\ndomain=host-only\npath={}\nsecure={}\nsameSite={}\npartitioned={}",
+                COOKIE_NAME, cookie.getPath(), cookie.isSecure(), cookie.getSameSite(), cookie.isPartitioned());
+
+        return cookie;
     }
 }
