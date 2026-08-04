@@ -35,11 +35,12 @@ public class CurrentUserService {
         String authClass = (authentication != null) ? authentication.getClass().getName() : "null";
         Object principal = (authentication != null) ? authentication.getPrincipal() : null;
         String principalClass = (principal != null) ? principal.getClass().getName() : "null";
+        boolean isAuth = (authentication != null && authentication.isAuthenticated());
         String principalUsername = (principal instanceof CustomUserDetails cud) ? cud.getUsername() : (authentication != null ? authentication.getName() : "null");
         UUID principalUserId = (principal instanceof CustomUserDetails cud) ? cud.getUserId() : null;
 
-        log.info("[AUTH-DEBUG] CurrentUserService getCurrentUser | authenticationNull: {} | authClass: {} | principalClass: {} | principalUsername: {} | principalUserId: {}",
-                authNull, authClass, principalClass, principalUsername, principalUserId);
+        log.info("[AUTH-DEBUG] CurrentUserService getCurrentUser | authNull: {} | authClass: {} | principalClass: {} | principalUsername: {} | principalUserId: {} | isAuthenticated: {}",
+                authNull, authClass, principalClass, principalUsername, principalUserId, isAuth);
 
         if (authentication == null
                 || !authentication.isAuthenticated()

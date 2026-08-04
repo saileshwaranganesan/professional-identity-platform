@@ -49,7 +49,19 @@ public class JwtService {
     }
 
     public boolean isTokenValid(String token, UserDetails userDetails) {
-        return extractUsername(token).equals(userDetails.getUsername()) && !isTokenExpired(token);
+        try {
+            String extractedUser = extractUsername(token);
+            boolean usernameMatches = extractedUser.equals(userDetails.getUsername());
+            boolean expired = isTokenExpired(token);
+            boolean valid = usernameMatches && !expired;
+            log.info("[AUTH-DEBUG] JwtService isTokenValid | usernameMatches: {} | tokenExpired: {} | finalResult: {}",
+                    usernameMatches, expired, valid);
+            return valid;
+        } catch (Exception e) {
+            log.error("[AUTH-DEBUG] JwtService isTokenValid Exception: {} | Message: {}",
+                    e.getClass().getName(), e.getMessage());
+            return false;
+        }
     }
 
     public long getExpirationMillis() {
