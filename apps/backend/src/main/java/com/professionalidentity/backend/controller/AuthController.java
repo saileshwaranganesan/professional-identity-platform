@@ -11,6 +11,8 @@ import com.professionalidentity.backend.service.CurrentUserService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirements;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
@@ -25,6 +27,8 @@ import org.springframework.web.bind.annotation.RestController;
 @SecurityRequirements
 @RequestMapping(ApplicationConstants.API_PREFIX + "/auth")
 public class AuthController {
+
+    private static final Logger log = LoggerFactory.getLogger(AuthController.class);
 
     private final AuthenticationService authenticationService;
     private final JwtCookieUtil jwtCookieUtil;
@@ -99,9 +103,20 @@ public class AuthController {
     @GetMapping("/me")
     public ResponseEntity<UserResponse> getCurrentUser() {
         try {
+            log.info("[AUTH-DEBUG] AuthController /me | Step 1: Executing currentUserService.getCurrentUser()");
             User user = currentUserService.getCurrentUser();
-            return ResponseEntity.ok(authenticationService.toUserResponse(user));
+            log.info("[AUTH-DEBUG] AuthController /me | Step 2: currentUserService returned user (id: {}, email: {})",
+                    user != null ? user.getId() : "null", user != null ? user.getEmail() : "null");
+
+            log.info("[AUTH-DEBUG] AuthController /me | Step 3: Executing authenticationService.toUserResponse(user)");
+            UserResponse userResponse = authenticationService.toUserResponse(user);
+            log.info("[AUTH-DEBUG] AuthController /me | Step 4: authenticationService.toUserResponse succeeded for email: {}",
+                    userResponse != null ? userResponse.getEmail() : "null");
+
+            return ResponseEntity.ok(userResponse);
         } catch (Exception e) {
+            log.error("[AUTH-DEBUG] AuthController /me EXCEPTION CAUGHT: {} | Message: {}",
+                    e.getClass().getName(), e.getMessage(), e);
             return ResponseEntity.status(401).build();
         }
     }
