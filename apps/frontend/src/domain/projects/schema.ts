@@ -26,7 +26,7 @@ export const projectBlockSchema = z.object({
   id: z.string(),
   blockType: blockTypeEnum,
   displayOrder: z.number(),
-  payload: z.record(z.any()),
+  payload: z.record(z.string(), z.any()),
 })
 
 export const projectApiSchema = z.object({
@@ -92,7 +92,7 @@ export const projectFormSchema = z.object({
     id: z.string().optional(),
     blockType: blockTypeEnum,
     displayOrder: z.number(),
-    payload: z.record(z.any()),
+    payload: z.record(z.string(), z.any()),
   })).optional().default([]),
   highlights: z.array(z.string()).optional().default([]),
 })

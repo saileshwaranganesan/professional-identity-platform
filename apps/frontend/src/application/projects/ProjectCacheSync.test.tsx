@@ -50,7 +50,7 @@ describe('Project Mutations Cache Synchronization', () => {
     featured: true,
     technologies: [],
     highlights: [],
-    screenshots: [],
+    blocks: [],
   }
 
   const createWrapper = () => {
@@ -84,7 +84,7 @@ describe('Project Mutations Cache Synchronization', () => {
         featured: false,
         published: true,
         highlights: [],
-        screenshots: [],
+        blocks: [],
       })
     })
 
@@ -109,7 +109,7 @@ describe('Project Mutations Cache Synchronization', () => {
           featured: true,
           published: true,
           highlights: [],
-          screenshots: [],
+          blocks: [],
         },
       })
     })
