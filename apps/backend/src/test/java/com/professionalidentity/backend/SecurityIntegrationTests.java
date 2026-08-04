@@ -86,4 +86,15 @@ class SecurityIntegrationTests {
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.message").value("The request contains invalid input."));
     }
+
+    @Test
+    void logoutEndpointReturnsCleanJwtCookieWithMaxAgeZero() throws Exception {
+        mockMvc.perform(org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post("/api/v1/auth/logout"))
+                .andExpect(status().isOk())
+                .andExpect(org.springframework.test.web.servlet.result.MockMvcResultMatchers.header().string(
+                        org.springframework.http.HttpHeaders.SET_COOKIE,
+                        org.hamcrest.Matchers.containsString("jwt=; Path=/; Max-Age=0")
+                ));
+    }
 }
+
