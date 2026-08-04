@@ -44,17 +44,23 @@ export function useLogout() {
 
   return useMutation<void, Error, void>({
     mutationFn: logoutApi,
-    onSuccess: async () => {
+    onMutate: async () => {
       await queryClient.cancelQueries({ queryKey: queryKeys.auth.me })
       queryClient.setQueryData(queryKeys.auth.me, null)
       queryClient.removeQueries({
         predicate: (query) => query.queryKey[0] !== 'auth',
       })
+    },
+    onSuccess: () => {
       toast.success('Logout successful.')
     },
     onError: (err) => {
       toast.error(err.message || 'Failed to complete logout.')
     },
+    onSettled: () => {
+      queryClient.setQueryData(queryKeys.auth.me, null)
+    },
   })
 }
+
 

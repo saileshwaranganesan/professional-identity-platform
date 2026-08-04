@@ -25,8 +25,11 @@ export function AdminSidebar({ isMobileOpen, onCloseMobile }: AdminSidebarProps)
 
   const handleLogout = async () => {
     onCloseMobile()
-    await logout()
-    await navigate({ to: '/', replace: true })
+    try {
+      await logout()
+    } finally {
+      await navigate({ to: '/', replace: true })
+    }
   }
 
   const sidebarClass = [
