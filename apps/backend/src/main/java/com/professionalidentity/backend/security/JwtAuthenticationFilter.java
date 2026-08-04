@@ -6,6 +6,8 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -15,9 +17,13 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.stream.Collectors;
 
 @Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
+
+    private static final Logger log = LoggerFactory.getLogger(JwtAuthenticationFilter.class);
 
     private static final String AUTHORIZATION_HEADER = "Authorization";
     private static final String BEARER_PREFIX = "Bearer ";
@@ -39,6 +45,21 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             HttpServletResponse response,
             FilterChain filterChain
     ) throws ServletException, IOException {
+        String uri = request.getRequestURI();
+        boolean cookiesNull = (request.getCookies() == null);
+
+        if (cookiesNull) {
+            log.info("[AUTH-DEBUG] Request URI: {} | cookiesNull: true | cookieNames: [] | jwtCookieFound: false", uri);
+        } else {
+            String cookieNames = Arrays.stream(request.getCookies())
+                    .map(Cookie::getName)
+                    .collect(Collectors.joining(", "));
+            boolean jwtCookieFound = Arrays.stream(request.getCookies())
+                    .anyMatch(c -> JwtCookieUtil.COOKIE_NAME.equals(c.getName()));
+            log.info("[AUTH-DEBUG] Request URI: {} | cookiesNull: false | cookieNames: [{}] | jwtCookieFound: {}",
+                    uri, cookieNames, jwtCookieFound);
+        }
+
         String token = extractTokenFromCookie(request);
 
         if (token == null) {
@@ -54,11 +75,16 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         }
 
         try {
+            log.info("[AUTH-DEBUG] Request URI: {} | Executing jwtService.extractUsername()", uri);
             String email = jwtService.extractUsername(token);
 
             if (email != null) {
                 UserDetails userDetails = customUserDetailsService.loadUserByUsername(email);
-                if (userDetails.isEnabled() && jwtService.isTokenValid(token, userDetails)) {
+                boolean valid = jwtService.isTokenValid(token, userDetails);
+                log.info("[AUTH-DEBUG] Request URI: {} | userDetails.isEnabled(): {} | jwtService.isTokenValid(): {}",
+                        uri, userDetails.isEnabled(), valid);
+
+                if (userDetails.isEnabled() && valid) {
                     UsernamePasswordAuthenticationToken authentication =
                             new UsernamePasswordAuthenticationToken(
                                     userDetails,
@@ -69,9 +95,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                             new WebAuthenticationDetailsSource().buildDetails(request)
                     );
                     SecurityContextHolder.getContext().setAuthentication(authentication);
+                    log.info("[AUTH-DEBUG] Request URI: {} | SecurityContextHolder.setAuthentication() EXECUTED successfully", uri);
                 }
             }
-        } catch (JwtException | IllegalArgumentException | UsernameNotFoundException ignored) {
+        } catch (JwtException | IllegalArgumentException | UsernameNotFoundException e) {
+            log.info("[AUTH-DEBUG] Request URI: {} | Exception during JWT processing: {}", uri, e.getClass().getSimpleName());
             SecurityContextHolder.clearContext();
         }
 

@@ -15,15 +15,18 @@ public class JwtCookieUtil {
     private final Duration expiration;
     private final boolean secure;
     private final String sameSite;
+    private final boolean partitioned;
 
     public JwtCookieUtil(
             JwtProperties jwtProperties,
-            @Value("${jwt.cookie.secure:true}") boolean secure,
-            @Value("${jwt.cookie.same-site:None}") String sameSite
+            @Value("${jwt.cookie.secure:false}") boolean secure,
+            @Value("${jwt.cookie.same-site:Lax}") String sameSite,
+            @Value("${jwt.cookie.partitioned:false}") boolean partitioned
     ) {
         this.expiration = jwtProperties.expiration();
         this.secure = secure;
         this.sameSite = sameSite;
+        this.partitioned = partitioned;
     }
 
     public ResponseCookie createJwtCookie(String token) {
@@ -33,6 +36,7 @@ public class JwtCookieUtil {
                 .path("/")
                 .maxAge(expiration)
                 .sameSite(sameSite)
+                .partitioned(partitioned)
                 .build();
     }
 
@@ -43,6 +47,7 @@ public class JwtCookieUtil {
                 .path("/")
                 .maxAge(0)
                 .sameSite(sameSite)
+                .partitioned(partitioned)
                 .build();
     }
 }
